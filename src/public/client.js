@@ -35,10 +35,10 @@ const App = (state) => {
     return `
         <header><h3>Choose Your Rover</h3></header>
         <main>
-            ${Rovers(rovers, roverShown)}
+            ${Rovers(rovers, roverShown, store)}
 
             <section>
-                ${AboutRover(roverShown, curiosity)}
+                ${AboutRover(roverShown, curiosity, store)}
                 <p>Here is an example section.</p>
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
@@ -77,18 +77,25 @@ const Greeting = (name) => {
     `
 }
 
-const Rovers = (rovers, roverShown) => {
+const Rovers = (rovers, roverShown, store) => {
     // console.log(`When making radio buttons roverShown: ${roverShown}`)
     let radioButtons = ''
     rovers.map(rover => {
-        let radioButton = `<input type="radio" id="roverButtons" name="${rover}" value="${rover}"`
+        let radioButton = `<input type="radio" id="roverButtons" name="rover" value="${rover}" onClick="updateRover(event, store)"`
         if (rover === roverShown) {
-            radioButton += 'checked'
+            radioButton += ' checked'
         }
         radioButton += `>${rover}`
         radioButtons += radioButton
     })
     return radioButtons
+}
+
+const updateRover = (event, store) => {
+    // updateSt
+    roverShown = event.target.value;
+    console.log(roverShown);
+    updateStore(store, { roverShown });
 }
 
 const AboutRover = (roverShown, curiosity) => {
@@ -111,6 +118,12 @@ const AboutRover = (roverShown, curiosity) => {
     `
         // <p>${curiosity.rover.photo_manifest.name}</p>
 }
+
+
+// const RoverImages = (latestPhotos) => {
+//     let images = ''
+//     latestPhotos.map(photos => images += <img src="`${photo.")
+// }
 
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
