@@ -3,7 +3,9 @@ let store = {
     apod: '',
     photos: '',
     roverShown: 'Curiosity',
-    curiosity: '',
+    CuriosityManifest: '',
+    OpportunityManifest: '',
+    SpiritManifest: '',
     opportunity: '',
     spirit: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
@@ -38,7 +40,7 @@ const App = (state) => {
             ${Rovers(rovers, roverShown, store)}
 
             <section>
-                ${AboutRover(roverShown, curiosity, store)}
+                ${AboutRover(store)}
                 <p>Here is an example section.</p>
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
@@ -98,23 +100,28 @@ const updateRover = (event, store) => {
     updateStore(store, { roverShown });
 }
 
-const AboutRover = (roverShown, curiosity) => {
-    if (!curiosity) {
+const AboutRover = (store) => {
+    const roverManifest = store.roverShown + 'Manifest'
+    // console.log(store[roverManifest])
+    if (!store[roverManifest]) {
         getRoverData(store)
     }
+    // console.log(store[roverManifest])
 
-    let photos = curiosity.roverData.photo_manifest.photos
+    // roverManifest = 'CuriosityManifest'
+
+    let photos = store[roverManifest].roverData.photo_manifest.photos
     console.log(`Total # of photos available: ${photos.length}`)
-    const latestPhotoDate = curiosity.roverData.photo_manifest.max_date
+    const latestPhotoDate = store[roverManifest].roverData.photo_manifest.max_date
     let latestPhotos = photos.filter(photo => photo.earth_date === latestPhotoDate)
     console.log(`Number of latest day photos: ${latestPhotos.length}`)
 
     return `
-        <h2>About ${roverShown}</h2>
-        <p>Launch date: ${curiosity.roverData.photo_manifest.launch_date}</p>
-        <p>Landing date: ${curiosity.roverData.photo_manifest.landing_date}</p>
-        <p>Status: ${curiosity.roverData.photo_manifest.status}</p>
-        <p>Date of latest photos available: ${curiosity.roverData.photo_manifest.max_date}</p>
+        <h2>About ${store.roverShown}</h2>
+        <p>Launch date: ${store[roverManifest].roverData.photo_manifest.launch_date}</p>
+        <p>Landing date: ${store[roverManifest].roverData.photo_manifest.landing_date}</p>
+        <p>Status: ${store[roverManifest].roverData.photo_manifest.status}</p>
+        <p>Date of latest photos available: ${store[roverManifest].roverData.photo_manifest.max_date}</p>
     `
         // <p>${curiosity.rover.photo_manifest.name}</p>
 }
@@ -196,7 +203,27 @@ const getRoverData = (state) => {
     const { roverShown } = state
 
     // fetch(`http://localhost:3000/${roverShown}`)
-    fetch(`http://localhost:3000/curiosity`)
+    fetch(`http://localhost:3000/rover/${roverShown}`)
         .then(res => res.json())
-        .then(curiosity => updateStore(store, { curiosity }))
+        .then(manifest => {
+            switch(roverShown) {
+                case 'Curiosity': {
+                    CuriosityManifest = manifest
+                    updateStore(store, { CuriosityManifest })
+                    break;
+                }
+                case 'Opportunity': {
+                    OpportunityManifest = manifest;
+                    updateStore(store, { OpportunityManifest })
+                    break;
+                }
+                case 'Spirit': {
+                    SpiritManifest = manifest;
+                    updateStore(store, { SpiritManifest });
+                    break;
+                }
+
+            }
+            // updateStore(store, { CuriosityManifest })
+        })
 }
