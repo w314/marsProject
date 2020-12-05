@@ -109,9 +109,19 @@ const roverInfo = (state) => {
     // create variable to refer to current rover's Manifest
     const manifestKey = currentRover + 'Manifest'
 
-    // if current Rover's manifest doesn't exist get the information
+    // if current Rover's manifest doesn't exist request the information
     if (!state[manifestKey]) {
         getRoverData(state)
+    } else {
+        // if rover is active and the date of the latest photos taken is not today
+        // request the information again
+        const manifest = state[manifestKey].roverData.photo_manifest;
+        const status = manifest.status;
+        const dateOfLatestPhotos = manifest.max_date;
+        const today = new Date();
+        if (status === 'active' && dateOfLatestPhotos <= today.getDate()) {
+            getRoverData(state)
+        }
     }
 
     // get manifest from state
@@ -156,23 +166,42 @@ const ImageOfTheDay = (apod) => {
     }
 }
 
+
 const photosOfMars = (state) => {
-    // console.log(`Photos when entering marsPhotos: ${photos}`)
+
+    // get current rover from state
     const { currentRover } = state;
-    const roverPhotos = currentRover + 'Photos';
-    if (!state[roverPhotos]) {
-        // console.log(`photos where empty calling getMarsPhotos`)
+
+    // create variable to refer to current rover's photos
+    const photosKey = currentRover + 'Photos';
+
+    // if there are no photos stored request the information
+    if (!state[photosKey]) {
         getRoverPhotos(state)
+    } else {
+        // if the date of the photos stored is earlier then the latest photos taken
+        // request the photos again
+        const manifestKey = currentRover + 'Manifest';
+        const dateOfLatestPhotos = state[manifestKey].roverData.photo_manifest.max_date;
+        const dateOfPhotosStored = state[photosKey].roverPhotos.photos[0].earth_date;
+        console.log(`Date of Photos stored: ${dateOfPhotosStored}`)
+        if (dateOfPhotosStored < dateOfLatestPhotos) {
+            getRoverPhotos(state)
+        }
     }
 
-    const photos = state[roverPhotos].roverPhotos.photos
-    // console.log(`Photos after getting mars pohtos: ${photos.photos.photos}`);
+    // variable to store array of photos
+    console.log(photosKey);
+    const photos = state[photosKey].roverPhotos.photos
 
+    // variable to store content
     let content = `
         <p>Here are the mars photos</p>
     `
+    // go through all the photos in photos array and add picture to content
     photos.map(photo => content += `<img src="${photo.img_src}" height="350px" width="100%"/>`)
 
+    // return content
     return content
 }
 
