@@ -31,10 +31,13 @@ app.get('/apod', async (req, res) => {
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
 app.get('/roverPhotos/*', async (req, res) => {
+
+	console.log(`Request path: ${req.path}`);
+	const rover = req.path.slice(13,-11)
+	const date = req.path.slice(-10,);
+
 	try {
-		const rover = req.path.slice(13,)
-		// console.log('trying to get mars photos')
-		let roverPhotos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?earth_date=2015-6-3&api_key=sUHsXIwebQ2Yztzj2DILp5goJaMM5QQBWhhp3Q7v`)
+		let roverPhotos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?earth_date=${date}&api_key=sUHsXIwebQ2Yztzj2DILp5goJaMM5QQBWhhp3Q7v`)
 		.then(res => res.json())
 		res.send({ roverPhotos })
 	} catch (err) {

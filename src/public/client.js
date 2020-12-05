@@ -190,9 +190,11 @@ const getImageOfTheDay = (state) => {
 }
 
 const getRoverPhotos = (state) => {
-    let { currentRover } = state
+    const { currentRover } = state;
+    const manifestKey = currentRover + 'Manifest';
+    const dateOfLatestPhotos = state[manifestKey].roverData.photo_manifest.max_date;
 
-    fetch(`http://localhost:3000/roverPhotos/${currentRover}`)
+    fetch(`http://localhost:3000/roverPhotos/${currentRover}/${dateOfLatestPhotos}`)
         .then(res => {
             return res.json()
         })
