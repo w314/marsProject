@@ -191,15 +191,12 @@ const photosOfMars = (state) => {
     }
 
     // variable to store array of photos
-    console.log(photosKey);
     const photos = state[photosKey].roverPhotos.photos
 
-    // variable to store content
-    let content = `
-        <p>Here are the mars photos</p>
-    `
-    // go through all the photos in photos array and add picture to content
-    photos.map(photo => content += `<img src="${photo.img_src}" height="350px" width="100%"/>`)
+    // generate content
+    const content = photos.reduce((acc, photo) => {
+        return acc += `<img src="${photo.img_src}" height="350px" width="100%"/>`
+    },`<p>Here are the mars photos</p>`)
 
     // return content
     return content
