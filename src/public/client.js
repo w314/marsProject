@@ -1,14 +1,14 @@
 let store = {
     user: { name: "Student" },
     apod: '',
-    photos: '',
-    roverShown: 'Curiosity',
-    CuriosityManifest: '',
-    OpportunityManifest: '',
-    SpiritManifest: '',
-    opportunity: '',
-    spirit: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
+    currentRover: 'Curiosity',
+    CuriosityManifest: '',
+    CuriocityPhotos: '',
+    OpportunityManifest: '',
+    OpportunityPhotos: '',
+    SpiritManifest: '',
+    SpiritPhotos: '',
 }
 
 // add our markup to the page
@@ -30,17 +30,18 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-    let { rovers, roverShown, roverData, curiosity, apod, photos } = state
+    let { rovers, currentRover, roverData, curiosity, apod, photos } = state
     // console.log(rovers)
 
 
     return `
         <header><h3>Choose Your Rover</h3></header>
         <main>
-            ${Rovers(rovers, roverShown, store)}
+            ${Rovers(rovers, currentRover, store)}
 
             <section>
-                ${AboutRover(store)}
+                ${roverInfo(store)}
+                ${photosOfMars(state)}
                 <p>Here is an example section.</p>
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
@@ -51,8 +52,6 @@ const App = (state) => {
                     but generally help with discoverability of relevant imagery.
                 </p>
                 ${ImageOfTheDay(apod)}
-                ${rovers}
-                ${photosOfMars(photos)}
 +            </section>
         </main>
         <footer></footer>
@@ -79,12 +78,12 @@ const Greeting = (name) => {
     `
 }
 
-const Rovers = (rovers, roverShown, store) => {
-    // console.log(`When making radio buttons roverShown: ${roverShown}`)
+const Rovers = (rovers, currentRover, store) => {
+    // console.log(`When making radio buttons currentRover: ${currentRover}`)
     let radioButtons = ''
     rovers.map(rover => {
         let radioButton = `<input type="radio" id="roverButtons" name="rover" value="${rover}" onClick="updateRover(event, store)"`
-        if (rover === roverShown) {
+        if (rover === currentRover) {
             radioButton += ' checked'
         }
         radioButton += `>${rover}`
@@ -93,44 +92,41 @@ const Rovers = (rovers, roverShown, store) => {
     return radioButtons
 }
 
+
 const updateRover = (event, store) => {
-    // updateSt
-    roverShown = event.target.value;
-    console.log(roverShown);
-    updateStore(store, { roverShown });
+    currentRover = event.target.value;
+    console.log(currentRover);
+    updateStore(store, { currentRover });
 }
 
-const AboutRover = (store) => {
-    const roverManifest = store.roverShown + 'Manifest'
-    // console.log(store[roverManifest])
-    if (!store[roverManifest]) {
-        getRoverData(store)
+
+
+const roverInfo = (state) => {
+
+    // get current rover from state
+    const { currentRover } = state;
+
+    // create variable to refer to current rover's Manifest
+    const manifestKey = currentRover + 'Manifest'
+
+    // if current Rover's manifest doesn't exist get the information
+    if (!state[manifestKey]) {
+        getRoverData(state)
     }
-    // console.log(store[roverManifest])
 
-    // roverManifest = 'CuriosityManifest'
+    // get manifest from state
+    const manifest = state[manifestKey].roverData.photo_manifest;
 
-    let photos = store[roverManifest].roverData.photo_manifest.photos
-    console.log(`Total # of photos available: ${photos.length}`)
-    const latestPhotoDate = store[roverManifest].roverData.photo_manifest.max_date
-    let latestPhotos = photos.filter(photo => photo.earth_date === latestPhotoDate)
-    console.log(`Number of latest day photos: ${latestPhotos.length}`)
-
+    // return page content
     return `
-        <h2>About ${store.roverShown}</h2>
-        <p>Launch date: ${store[roverManifest].roverData.photo_manifest.launch_date}</p>
-        <p>Landing date: ${store[roverManifest].roverData.photo_manifest.landing_date}</p>
-        <p>Status: ${store[roverManifest].roverData.photo_manifest.status}</p>
-        <p>Date of latest photos available: ${store[roverManifest].roverData.photo_manifest.max_date}</p>
+        <h2>${currentRover}</h2>
+        <p>Launch date: ${manifest.launch_date}</p>
+        <p>Landing date: ${manifest.landing_date}</p>
+        <p>Status: ${manifest.status}</p>
+        <p>Date of latest photos available: ${manifest.max_date}</p>
     `
-        // <p>${curiosity.rover.photo_manifest.name}</p>
 }
 
-
-// const RoverImages = (latestPhotos) => {
-//     let images = ''
-//     latestPhotos.map(photos => images += <img src="`${photo.")
-// }
 
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
@@ -160,18 +156,24 @@ const ImageOfTheDay = (apod) => {
     }
 }
 
-const photosOfMars = (photos) => {
+const photosOfMars = (state) => {
     // console.log(`Photos when entering marsPhotos: ${photos}`)
-    if (!photos) {
+    const { currentRover } = state;
+    const roverPhotos = currentRover + 'Photos';
+    if (!state[roverPhotos]) {
         // console.log(`photos where empty calling getMarsPhotos`)
-        getMarsPhotos(store)
+        getRoverPhotos(state)
     }
+
+    const photos = state[roverPhotos].roverPhotos.photos
     // console.log(`Photos after getting mars pohtos: ${photos.photos.photos}`);
-    return (`
+
+    let content = `
         <p>Here are the mars photos</p>
-        <p>${photos}</p>
-        <p>${photos.photos.photos[0].id}</p>
-    `)
+    `
+    photos.map(photo => content += `<img src="${photo.img_src}" height="350px" width="100%"/>`)
+
+    return content
 }
 
 // ------------------------------------------------------  API CALLS
@@ -187,43 +189,59 @@ const getImageOfTheDay = (state) => {
     // return data
 }
 
-const getMarsPhotos = (state) => {
-    let { photos } = state
-    console.log(`After setting phtots by state: ${photos}`)
+const getRoverPhotos = (state) => {
+    let { currentRover } = state
 
-    fetch(`http://localhost:3000/marsPhotos`)
+    fetch(`http://localhost:3000/roverPhotos/${currentRover}`)
         .then(res => {
-            console.log(`response from marsPhotos: ${res}`)
-            return res.json()})
-        .then(photos => updateStore(store, { photos }))
+            return res.json()
+        })
+        .then(photos => {
+            switch(currentRover) {
+                case 'Curiosity': {
+                    CuriosityPhotos = photos;
+                    updateStore(state, { CuriosityPhotos });
+                    break;
+                }
+                case 'Opportunity': {
+                    OpportunityPhotos = photos;
+                    updateStore(state, { OpportunityPhotos })
+                    break;
+                }
+                case 'Spirit': {
+                    SpiritPhotos = photos;
+                    updateStore(state, { SpiritPhotos });
+                    break;
+                }
+            }
+        })
 }
 
 
 const getRoverData = (state) => {
-    const { roverShown } = state
+    const { currentRover } = state
 
-    // fetch(`http://localhost:3000/${roverShown}`)
-    fetch(`http://localhost:3000/rover/${roverShown}`)
+    // fetch(`http://localhost:3000/${currentRover}`)
+    fetch(`http://localhost:3000/rover/${currentRover}`)
         .then(res => res.json())
         .then(manifest => {
-            switch(roverShown) {
+            switch(currentRover) {
                 case 'Curiosity': {
                     CuriosityManifest = manifest
-                    updateStore(store, { CuriosityManifest })
+                    updateStore(state, { CuriosityManifest })
                     break;
                 }
                 case 'Opportunity': {
                     OpportunityManifest = manifest;
-                    updateStore(store, { OpportunityManifest })
+                    updateStore(state, { OpportunityManifest })
                     break;
                 }
                 case 'Spirit': {
                     SpiritManifest = manifest;
-                    updateStore(store, { SpiritManifest });
+                    updateStore(state, { SpiritManifest });
                     break;
                 }
 
             }
-            // updateStore(store, { CuriosityManifest })
         })
 }
