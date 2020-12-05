@@ -5,10 +5,14 @@ body {
   flex-direction: column;
   font-family: Arial;
   min-height: 100vh;
+  /*background-color: #e8cca5;*/
+  background-color: #fdfaf6;
 }
 
 header {
   /* header styles */
+  background-color: #bea787;
+  padding: 1rem;
 }
 
 main {
