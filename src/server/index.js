@@ -17,7 +17,7 @@ app.use('/', express.static(path.join(__dirname, '../public')))
 // example API call
 app.get('/apod', async (req, res) => {
     try {
-        let image = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`)
+        const image = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`)
             .then(res => res.json())
         res.send({ image })
         // .then(res => console.log(res))
@@ -35,7 +35,7 @@ app.get('/roverPhotos/*', async (req, res) => {
 	const date = req.path.slice(-10,);
 
 	try {
-		let roverPhotos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?earth_date=${date}&api_key=${process.env.API_KEY}`)
+		const roverPhotos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?earth_date=${date}&api_key=${process.env.API_KEY}`)
 		.then(res => res.json())
 		res.send({ roverPhotos })
 	} catch (err) {
@@ -47,7 +47,7 @@ app.get('/rover/*', async (req, res) => {
 	try {
 		const rover = req.path.slice(7,);
 		console.log(`Request path: ${req.path}`);
-		let roverData = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${process.env.API_KEY}`)
+		const roverData = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}/?api_key=${process.env.API_KEY}`)
 		.then(res => res.json())
 		res.send({ roverData })
 	} catch (err) {
