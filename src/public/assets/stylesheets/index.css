@@ -4,9 +4,10 @@ body {
   display: flex;
   flex-direction: column;
   font-family: Arial;
-  min-height: 100vh;
+  /*min-height: 100vh;*/
   /*background-color: #e8cca5;*/
   background-color: #fdfaf6;
+  font-variant: small-caps;
 }
 
 header {
@@ -16,9 +17,16 @@ header {
 }
 
 .selectRoverTitle {
-  font-variant: small-caps;
-  font-size: 1em;
+  font-size: 1rem;
+  width: 100%;
   text-align: center;
+}
+
+.selectRover {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0.5rem;
+  /*justify-content: space-evenly;*/
 }
 
 
