@@ -6,16 +6,12 @@ let store = {
     Spirit: '',
     Curiosity: '',
     Opportunity: '',
-    CuriosityManifest: '',
-    CuriocityPhotos: '',
-    OpportunityManifest: '',
-    OpportunityPhotos: '',
-    SpiritManifest: '',
-    SpiritPhotos: '',
 }
 
 // add our markup to the page
-const root = document.getElementById('root') {
+const root = document.getElementById('root')
+
+const updateStore = (store, newState) => {
 
     // console.log(`Old state:\n ${store.photos}`)
     console.log(`Old state:`)
