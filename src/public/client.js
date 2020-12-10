@@ -44,22 +44,6 @@ const App = (state) => {
         </main>
         <footer></footer>
     `
-                // <p>Here is an example section.</p>
-            // <section>
-            //     ${roverManifest(state)}
-            // </section>
-            // <section>
-            //     ${roverPhotos(state)}
-            // </section>
-                // <p>
-                //     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                //     the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                //     This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                //     applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                //     explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                //     but generally help with discoverability of relevant imagery.
-                // </p>
-                // ${ImageOfTheDay(apod)}
 }
 
 // listening for load event because page should load before any JS is called
@@ -181,165 +165,12 @@ const createMainContent = (roverInfo) => {
     return content
 }
 
-const roverManifest = (state) => {
-
-    // get current rover from state
-    const { currentRover } = state;
-
-    // create variable to refer to current rover's Manifest
-    const manifestKey = currentRover + 'Manifest'
-
-    // if current Rover's manifest doesn't exist request the information
-    if (!state[manifestKey]) {
-        getRoverManifest(state)
-    } else {
-        // if rover is active and the date of the latest photos taken is not today
-        // request the information again
-        const manifest = state[manifestKey].roverData.photo_manifest;
-        // const manifest = state[manifestKey]
-        const status = manifest.status;
-        const dateOfLatestPhotos = manifest.max_date;
-        const today = new Date();
-        if (status === 'active' && dateOfLatestPhotos <= today.getDate()) {
-            getRoverManifest(state)
-        }
-    }
-
-    // get manifest from state
-    // const manifest = state[manifestKey].roverData.photo_manifest;
-    const manifest = state[manifestKey]
-
-    // return page content
-    return `
-        <h2>${currentRover}</h2>
-        <div>
-            <p>Launch date: ${manifest.launch_date}</p>
-            <p>Landing date: ${manifest.landing_date}</p>
-            <p>Status: ${manifest.status}</p>
-        </div>
-        <div>
-        </div>
-    `
-}
 
 
-
-
-const roverPhotos = (state) => {
-
-    // get current rover from state
-    const { currentRover } = state;
-
-    // create variable to refer to current rover's photos
-    const photosKey = currentRover + 'Photos';
-
-    // get date of latest available photos
-    const manifestKey = currentRover + 'Manifest';
-    // const dateOfLatestPhotos = state[manifestKey].roverData.photo_manifest.max_date;
-    const dateOfLatestPhotos = state[manifestKey].max_date;
-
-    // if there are no photos stored request the information
-    if (!state[photosKey]) {
-        getRoverPhotos(state)
-    } else {
-        // if the date of the photos stored is earlier then the latest photos taken
-        // request the photos again
-        const dateOfPhotosStored = state[photosKey].roverPhotos.photos[0].earth_date;
-        if (dateOfPhotosStored < dateOfLatestPhotos) {
-            getRoverPhotos(state)
-        }
-    }
-
-    // variable to store array of photos
-    // const photos = state[photosKey].roverPhotos.photos
-    const photos = state[photosKey].roverPhotos.photos
-
-    // generate image tags
-    const images = photos.reduce((content, photo) => {return content += `<img src="${photo.img_src}" height="350px" width="100%"/>`}, '')
-
-
-    // return content
-    return `
-        <div class="roverPhotos">
-                <p>these are the latest photos available taken on ${dateOfLatestPhotos}.</p>
-                ${images}
-        </div>
-    `
-}
 
 // ------------------------------------------------------  API CALLS
 
-const getRoverManifest = (rover) => {
-    // const { currentRover } = state
 
-    fetch(`http://localhost:3000/rover/${rover}`)
-        .then(res => res.json())
-        .then(manifest => {
-        // .then(res => {
-
-            // const manifest = {
-            //     name: res.roverData.photo_manifest.name,
-            //     launch_date: res.roverData.photo_manifest.launch_date,
-            //     landing_date: res.roverData.photo_manifest.landing_date,
-            //     max_date: res.roverData.photo_manifest.max_date
-            // }
-
-            // console.log(`max date: ${manifest.max_date}`)
-
-            switch(currentRover) {
-                case 'Curiosity': {
-                    CuriosityManifest = manifest
-                    updateStore(state, { CuriosityManifest })
-                    break;
-                }
-                case 'Opportunity': {
-                    OpportunityManifest = manifest;
-                    updateStore(state, { OpportunityManifest })
-                    break;
-                }
-                case 'Spirit': {
-                    SpiritManifest = manifest;
-                    updateStore(state, { SpiritManifest });
-                    break;
-                }
-            }
-
-        })
-}
-
-
-const getRoverPhotos = (state) => {
-    const { currentRover } = state;
-    console.log(`Current Rover: ${currentRover}`)
-    const manifestKey = currentRover + 'Manifest';
-    const dateOfLatestPhotos = state[manifestKey].roverData.photo_manifest.max_date;
-    // const dateOfLatestPhotos = state[manifestKey].max_date;
-    console.log(`dateOfLatestPhotos: ${dateOfLatestPhotos}` )
-
-    fetch(`http://localhost:3000/roverPhotos/${currentRover}/${dateOfLatestPhotos}`)
-        .then(res => {
-            return res.json()
-        })
-        .then(photos => {
-            switch(currentRover) {
-                case 'Curiosity': {
-                    CuriosityPhotos = photos;
-                    updateStore(state, { CuriosityPhotos });
-                    break;
-                }
-                case 'Opportunity': {
-                    OpportunityPhotos = photos;
-                    updateStore(state, { OpportunityPhotos })
-                    break;
-                }
-                case 'Spirit': {
-                    SpiritPhotos = photos;
-                    updateStore(state, { SpiritPhotos });
-                    break;
-                }
-            }
-        })
-}
 
 
 const getRoverInfo = (rover) => {
