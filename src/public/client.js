@@ -14,14 +14,14 @@ const root = document.getElementById('root')
 const updateStore = (store, newState) => {
 
     // console.log(`Old state:\n ${store.photos}`)
-    console.log(`Old state:`)
-    console.log(store)
-    console.log(`updating store with new state`)
+    // console.log(`Old state:`)
+    // console.log(store)
+    console.log(`-----  UPDATING STORE ------- with new state`)
     console.log(newState);
     store = Object.assign(store, newState)
     // console.log(`Updated state:\n${store.photos}`)
-    console.log(`Updated state:`)
-    console.log(store)
+    // console.log(`Updated state:`)
+    // console.log(store)
     render(root, store)
 }
 
@@ -91,8 +91,8 @@ const updateRover = (event, state) => {
 
 
 const mainContent = (state) => {
-    console.log(`state in mainContent:`)
-    console.log(state)
+    // console.log(`state in mainContent:`)
+    // console.log(state)
 
     const rover = state.currentRover;
 
@@ -121,8 +121,8 @@ const mainContent = (state) => {
         return createMainContent(state[rover]);
     }
 
-    console.log(`roverInfo before colling createMainContent:`)
-    console.log(state[rover])
+    // console.log(`roverInfo before colling createMainContent:`)
+    // console.log(state[rover])
 
     createMainContent(state[rover])
 }
@@ -131,13 +131,13 @@ const mainContent = (state) => {
 
 const createMainContent = (roverInfo) => {
 
-    console.log(`roverInfo in createMainContent:`)
-    console.log(roverInfo)
+    // console.log(`roverInfo in createMainContent:`)
+    // console.log(roverInfo)
 
     const { manifest, photos } = roverInfo
 
-    console.log(`Photos: `)
-    console.log(photos)
+    // console.log(`Photos: `)
+    // console.log(photos)
 
     // generate image tags
     const images = photos.reduce((content, photo) => {return content += `<img src="${photo.img_src}" height="350px" width="100%"/>`}, '')
@@ -160,7 +160,7 @@ const createMainContent = (roverInfo) => {
 
         <p>szia</p>
     `
-    console.log(`Main content in createMainContent before returning: ${content}`)
+    // console.log(`Main content in createMainContent before returning: ${content}`)
     return content
 }
 
@@ -194,7 +194,7 @@ const getRoverInfo = (rover) => {
         .then(roverInfo => {
             // console.log(roverInfo)
             const dateOfLatestPhotos = roverInfo.manifest.max_date;
-            console.log(`date of latest photos: ${dateOfLatestPhotos}`)
+            // console.log(`date of latest photos: ${dateOfLatestPhotos}`)
             const roverData = fetch(`http://localhost:3000/roverPhotos/${rover}/${dateOfLatestPhotos}`)
             .then(res => res.json())
             .then(res => {
@@ -205,8 +205,8 @@ const getRoverInfo = (rover) => {
             return roverData
         })
         .then(roverInfo => {
-            console.log(`Our rover is: ${rover}`)
-            console.log(roverInfo)
+            // console.log(`Our rover is: ${rover}`)
+            // console.log(roverInfo)
             // const newState = {[rover]: roverInfo}
             // console.log(newState)
             return roverInfo
@@ -248,9 +248,9 @@ const ImageOfTheDay = (apod) => {
     // If image does not already exist, or it is not from today -- request it again
     const today = new Date()
     const photodate = new Date(apod.date)
-    console.log(photodate.getDate(), today.getDate());
+    // console.log(photodate.getDate(), today.getDate());
 
-    console.log(photodate.getDate() === today.getDate());
+    // console.log(photodate.getDate() === today.getDate());
     if (!apod || apod.date === today.getDate() ) {
         getImageOfTheDay(store)
     }
