@@ -185,6 +185,7 @@ const getRoverInfo = (rover) => {
                 name: res.roverData.photo_manifest.name,
                 launch_date: res.roverData.photo_manifest.launch_date,
                 landing_date: res.roverData.photo_manifest.landing_date,
+                status: res.roverData.photo_manifest.status,
                 max_date: res.roverData.photo_manifest.max_date
             }
             return { manifest: manifest}
