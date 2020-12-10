@@ -15,12 +15,17 @@ let store = {
 }
 
 // add our markup to the page
-const root = document.getElementById('root')
+const root = document.getElementById('root') {
 
-const updateStore = (store, newState) => {
+    // console.log(`Old state:\n ${store.photos}`)
+    console.log(`Old state:`)
+    console.log(store)
     console.log(`updating store with new state`)
     console.log(newState);
     store = Object.assign(store, newState)
+    // console.log(`Updated state:\n${store.photos}`)
+    console.log(`Updated state:`)
+    console.log(store)
     render(root, store)
 }
 
