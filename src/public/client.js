@@ -3,6 +3,9 @@ let store = {
     // apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
     currentRover: 'Spirit',
+    Spirit: '',
+    Curiosity: '',
+    Opportunity: '',
     CuriosityManifest: '',
     CuriocityPhotos: '',
     OpportunityManifest: '',
@@ -15,11 +18,9 @@ let store = {
 const root = document.getElementById('root')
 
 const updateStore = (store, newState) => {
-    // console.log(`Old state:\n ${store.photos}`)
     console.log(`updating store with new state`)
     console.log(newState);
     store = Object.assign(store, newState)
-    // console.log(`Updated state:\n${store.photos}`)
     render(root, store)
 }
 
@@ -39,16 +40,17 @@ const App = (state) => {
             ${selectRover(state)}
         </header>
         <main>
-            <section>
-                ${roverManifest(state)}
-            </section>
-            <section>
-                ${roverPhotos(state)}
-            </section>
+            ${mainContent(state)}
         </main>
         <footer></footer>
     `
                 // <p>Here is an example section.</p>
+            // <section>
+            //     ${roverManifest(state)}
+            // </section>
+            // <section>
+            //     ${roverPhotos(state)}
+            // </section>
                 // <p>
                 //     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
                 //     the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
@@ -103,8 +105,80 @@ const updateRover = (event, state) => {
 }
 
 
-const mainContent = (state) => {
+const mainContent = async (state) => {
+// async function mainContent(state) {
+    console.log(`state in mainContent:`)
+    console.log(state)
 
+    const rover = state.currentRover;
+
+    if (!state[rover]) {
+        const content = await getRoverInfo(rover)
+        // .then(res => res.json())
+        .then(res => {
+            console.log(`returned from getRoverInfo: ${res.manifest.name}`)
+            const newState = {[rover] : res}
+            console.log(`new state: ${newState.Spirit.manifest.name}`)
+            updateStore(state, newState)
+            return state[rover]
+        })
+        // .then(roverInfo => createMainContent(roverInfo))
+        .then(roverInfo =>
+        {
+            const c = createMainContent(roverInfo)
+            console.log(`just got main content: `)
+            console.log(c)
+            return c
+        })
+        // .then(re)
+
+        console.log(`content before returning: `)
+        console.log(content)
+        return content.toString()
+    }
+
+
+
+    // console.log(`rover in state after calling getRoverInfo:`)
+    // console.log(state)
+    // console.log(typeOf(state[rover]))
+
+    // return createMainContent(state[rover])
+}
+
+const createMainContent = (roverInfo) => {
+
+    console.log(`roverInfo in createMainContent:`)
+    console.log(roverInfo)
+
+    const { manifest, photos } = roverInfo
+
+    console.log(`Photos: `)
+    console.log(photos)
+
+    // generate image tags
+    const images = photos.reduce((content, photo) => {return content += `<img src="${photo.img_src}" height="350px" width="100%"/>`}, '')
+
+    content = `
+        <section>
+            <h2>${manifest.name}</h2>
+            <div>
+                <p>Launch date: ${manifest.launch_date}</p>
+                <p>Landing date: ${manifest.landing_date}</p>
+                <p>Status: ${manifest.status}</p>
+            </div>
+        </section>
+        <section>
+            <div class="roverPhotos">
+                <p>these are the latest photos available taken on ${manifest.max_date}.</p>
+                ${images}
+            </div>
+        </section>
+
+        <p>szia</p>
+    `
+    console.log(`Main content: ${content}`)
+    return content
 }
 
 const roverManifest = (state) => {
@@ -195,10 +269,10 @@ const roverPhotos = (state) => {
 
 // ------------------------------------------------------  API CALLS
 
-const getRoverManifest = (state) => {
-    const { currentRover } = state
+const getRoverManifest = (rover) => {
+    // const { currentRover } = state
 
-    fetch(`http://localhost:3000/rover/${currentRover}`)
+    fetch(`http://localhost:3000/rover/${rover}`)
         .then(res => res.json())
         .then(manifest => {
         // .then(res => {
@@ -267,6 +341,50 @@ const getRoverPhotos = (state) => {
         })
 }
 
+
+const getRoverInfo = (rover) => {
+    // const rover =  state.currentRover;
+
+    // const roverInfo = state[rover];
+    // console.log(`rover object in state: ${rover}`)
+    // if (!roverInfo) {
+    const roverInfo = fetch(`http://localhost:3000/rover/${rover}`)
+        .then(res => res.json())
+        .then(res => {
+            const manifest = {
+                name: res.roverData.photo_manifest.name,
+                launch_date: res.roverData.photo_manifest.launch_date,
+                landing_date: res.roverData.photo_manifest.landing_date,
+                max_date: res.roverData.photo_manifest.max_date
+            }
+            return { manifest: manifest}
+        })
+        // .then(res => res.json())
+        .then(roverInfo => {
+            // console.log(roverInfo)
+            const dateOfLatestPhotos = roverInfo.manifest.max_date;
+            console.log(`date of latest photos: ${dateOfLatestPhotos}`)
+            const roverData = fetch(`http://localhost:3000/roverPhotos/${rover}/${dateOfLatestPhotos}`)
+            .then(res => res.json())
+            .then(res => {
+                roverInfo.photos = res.roverPhotos.photos
+                // console.log(roverInfo)
+                return roverInfo
+            })
+            return roverData
+        })
+        .then(roverInfo => {
+            console.log(`Our rover is: ${rover}`)
+            console.log(roverInfo)
+            // const newState = {[rover]: roverInfo}
+            // console.log(newState)
+            return roverInfo
+            // updateStore(state, newState)
+        })
+
+    return Promise.resolve(roverInfo)
+    // .then(res => mainContent())
+}
 
 
 // UDACITY EXAMPLES
