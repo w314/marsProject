@@ -89,46 +89,44 @@ const updateRover = (event, state) => {
 }
 
 
-const mainContent = async (state) => {
-// async function mainContent(state) {
+const mainContent = (state) => {
     console.log(`state in mainContent:`)
     console.log(state)
 
     const rover = state.currentRover;
 
+    // if (state[rover]) {
+    //     console.log(`max_date: ${state[rover].manifest.max_date}` )
+    //     console.log(`max earth_date: ${state[rover].photos[0].earth_date}`)
+    //     const photosOutDated = state[rover] && state[rover].manifest.max_date > state[rover].photos[0].earth_date
+    //     console.log(`photos are outdated: ${photosOutDated}`)
+    // }
+    const photosOutDated = state[rover] && state[rover].manifest.max_date > state[rover].photos[0].earth_date
+
     if (!state[rover]) {
-        const content = await getRoverInfo(rover)
+        // const content = getRoverInfo(rover)
+        getRoverInfo(rover)
         // .then(res => res.json())
         .then(res => {
-            console.log(`returned from getRoverInfo: ${res.manifest.name}`)
+            // console.log(`returned from getRoverInfo: ${res.manifest.name}`)
             const newState = {[rover] : res}
-            console.log(`new state: ${newState.Spirit.manifest.name}`)
+            // console.log(`new state: ${newState.Spirit.manifest.name}`)
             updateStore(state, newState)
-            return state[rover]
+            // return state[rover]
         })
-        // .then(roverInfo => createMainContent(roverInfo))
-        .then(roverInfo =>
-        {
-            const c = createMainContent(roverInfo)
-            console.log(`just got main content: `)
-            console.log(c)
-            return c
-        })
-        // .then(re)
-
-        console.log(`content before returning: `)
-        console.log(content)
-        return content.toString()
+    // } else if (photosOutDated) {
+    //     const
+    } else {
+        return createMainContent(state[rover]);
     }
 
+    console.log(`roverInfo before colling createMainContent:`)
+    console.log(state[rover])
 
-
-    // console.log(`rover in state after calling getRoverInfo:`)
-    // console.log(state)
-    // console.log(typeOf(state[rover]))
-
-    // return createMainContent(state[rover])
+    createMainContent(state[rover])
 }
+
+
 
 const createMainContent = (roverInfo) => {
 
@@ -161,7 +159,7 @@ const createMainContent = (roverInfo) => {
 
         <p>szia</p>
     `
-    console.log(`Main content: ${content}`)
+    console.log(`Main content in createMainContent before returning: ${content}`)
     return content
 }
 
