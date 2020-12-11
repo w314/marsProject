@@ -2,7 +2,7 @@ let store = {
     // user: { name: "Student" },(
     // apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-    currentRover: 'Spirit',
+    currentRover: 'Opportunity',
     Spirit: '',
     Curiosity: '',
     Opportunity: '',
@@ -133,22 +133,32 @@ const createMainContent = (roverInfo) => {
         {return content += `<img src="${photo.img_src}" height="350px" width="100%"/>`}, '')
 
     return `
-        <section>
-            <h2>${manifest.name}</h2>
-            <div>
-                <p>Launch date: ${manifest.launch_date}</p>
-                <p>Landing date: ${manifest.landing_date}</p>
-                <p>Status: ${manifest.status}</p>
+        <section class="roverManifest">
+            <div class="roverInfo">
+                <h2 class="roverName">${manifest.name}</h2>
+                <p class="manifestDate">
+                    <span class="manifestLabel">Launch date:</span>
+                    <span class="manifestData">${manifest.launch_date}</span>
+                </p>
+                <p class=manifestDate>
+                    <span class="manifestLabel">Landing date:</span>
+                    <span class="manifestData">${manifest.landing_date}</span>
+                </p>
+                <p>
+                    <span class="manifestLabel">Status:</span>
+                    <span class="manifestData">${manifest.status}</span>
+                </p>
+            </div>
+            <div class="roverImage">
+                <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
             </div>
         </section>
         <section>
             <div class="roverPhotos">
-                <p>these are the latest photos available taken on ${manifest.max_date}.</p>
+                <p class=imageTitle>these are the latest photos available taken on ${manifest.max_date}</p>
                 ${images}
             </div>
         </section>
-
-        <p>szia</p>
     `
 }
 
