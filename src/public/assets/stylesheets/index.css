@@ -122,22 +122,28 @@ footer {
     height: auto;
     padding: 0.5em;
   }
+
+  .selectRover {
+    justify-content: center;
+  }
+
+  .selectRover input {
+    margin-left: 2em;
+  }
 }
 
-
-  /* use mobile */
-}
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 600px) {
 
-  .marsImage {
-    width: 50%;
-    height: auto;
-    padding: 0.5em;
+  .selectRover {
+    justify-content: center;
+  }
+
+  .selectRover input {
+    margin-left: 2em;
   }
 }
-
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
