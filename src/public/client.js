@@ -91,58 +91,48 @@ const updateRover = (event, state) => {
 
 
 const mainContent = (state) => {
-    // console.log(`state in mainContent:`)
-    // console.log(state)
 
+    // get current rover
     const rover = state.currentRover;
 
-    // if (state[rover]) {
-    //     console.log(`max_date: ${state[rover].manifest.max_date}` )
-    //     console.log(`max earth_date: ${state[rover].photos[0].earth_date}`)
-    //     const photosOutDated = state[rover] && state[rover].manifest.max_date > state[rover].photos[0].earth_date
-    //     console.log(`photos are outdated: ${photosOutDated}`)
-    // }
-    const photosOutDated = state[rover] && state[rover].manifest.max_date > state[rover].photos[0].earth_date
+    // if a rover is active, it's photos are uploaded throughout the day
+    // it's worth fetchings its data regularly
+    // create variable to store current time
+    const now = new Date()
+    // set time period in milliseconds after which an active rover's information is refreshed
+    const refreshTime = 1000 * 60 * 15;
+    // create boolean to determine if manifest is outdated
+    const manifestOutDated =
+        state[rover] &&
+        state[rover].manifest.status === 'active' &&
+        state[rover].manifest.time_stamp <= now.getTime() - refreshTime
 
-    if (!state[rover]) {
-        // const content = getRoverInfo(rover)
+    // if information about rover is missing or if it's outdated request information again
+    if (!state[rover] || manifestOutDated) {
+        // request rover information
         getRoverInfo(rover)
-        // .then(res => res.json())
         .then(res => {
-            // console.log(`returned from getRoverInfo: ${res.manifest.name}`)
+            // update store with information received
             const newState = {[rover] : res}
-            // console.log(`new state: ${newState.Spirit.manifest.name}`)
             updateStore(state, newState)
-            // return state[rover]
         })
-    // } else if (photosOutDated) {
-    //     const
-    } else {
-        return createMainContent(state[rover]);
     }
 
-    // console.log(`roverInfo before colling createMainContent:`)
-    // console.log(state[rover])
-
-    createMainContent(state[rover])
+    // return content created
+    return createMainContent(state[rover])
 }
 
 
 
 const createMainContent = (roverInfo) => {
 
-    // console.log(`roverInfo in createMainContent:`)
-    // console.log(roverInfo)
-
     const { manifest, photos } = roverInfo
 
-    // console.log(`Photos: `)
-    // console.log(photos)
-
     // generate image tags
-    const images = photos.reduce((content, photo) => {return content += `<img src="${photo.img_src}" height="350px" width="100%"/>`}, '')
+    const images = photos.reduce((content, photo) =>
+        {return content += `<img src="${photo.img_src}" height="350px" width="100%"/>`}, '')
 
-    content = `
+    return `
         <section>
             <h2>${manifest.name}</h2>
             <div>
@@ -160,8 +150,6 @@ const createMainContent = (roverInfo) => {
 
         <p>szia</p>
     `
-    // console.log(`Main content in createMainContent before returning: ${content}`)
-    return content
 }
 
 
@@ -181,12 +169,14 @@ const getRoverInfo = (rover) => {
     const roverInfo = fetch(`http://localhost:3000/rover/${rover}`)
         .then(res => res.json())
         .then(res => {
+            const date = new Date();
             const manifest = {
                 name: res.roverData.photo_manifest.name,
                 launch_date: res.roverData.photo_manifest.launch_date,
                 landing_date: res.roverData.photo_manifest.landing_date,
                 status: res.roverData.photo_manifest.status,
-                max_date: res.roverData.photo_manifest.max_date
+                max_date: res.roverData.photo_manifest.max_date,
+                time_stamp: date.getTime()
             }
             return { manifest: manifest}
         })
