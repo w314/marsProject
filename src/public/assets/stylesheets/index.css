@@ -90,7 +90,7 @@ footer {
 
 
 /* -------------------  TABLET  --------------------- */
-@media (min-width: 500px) {
+@media (min-width: 450px) {
 
   .selectRover {
     font-size: 1em;
@@ -111,10 +111,33 @@ footer {
   .manifestDate {
     display: flex;
     flex-direction: row;
+  }
+
+  .manifestDate .manifestLabel {
+    padding-right: 0.3em;
+  }
+
+  .marsImage {
+    width: 50%;
+    height: auto;
+    padding: 0.5em;
+  }
 }
+
 
   /* use mobile */
 }
+
+/* -------------------  TABLET  --------------------- */
+@media (min-width: 600px) {
+
+  .marsImage {
+    width: 50%;
+    height: auto;
+    padding: 0.5em;
+  }
+}
+
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {

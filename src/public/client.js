@@ -130,7 +130,10 @@ const createMainContent = (roverInfo) => {
 
     // generate image tags
     const images = photos.reduce((content, photo) =>
-        {return content += `<img src="${photo.img_src}" height="350px" width="100%"/>`}, '')
+        // {return content += `<img class="marsImage" src="${photo.img_src}" height="350px" width="100%"/>`}, '')
+        {return content += `<img class="marsImage" src="${photo.img_src}"/>`}, '')
+
+    console.log(`images: ${images}`)
 
     return `
         <section class="roverManifest">
@@ -153,9 +156,10 @@ const createMainContent = (roverInfo) => {
                 <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
             </div>
         </section>
-        <section>
-            <div class="roverPhotos">
-                <p class=imageTitle>these are the latest photos available taken on ${manifest.max_date}</p>
+        <section class="roverPhotos">
+        <section class="roverPhotos">
+            <p class=imageTitle>latest photos available taken on ${manifest.max_date}</p>
+            <div class="marsImages">
                 ${images}
             </div>
         </section>
