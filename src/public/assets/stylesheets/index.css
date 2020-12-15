@@ -10,6 +10,12 @@ body {
   font-variant: small-caps;
 }
 
+main {
+  flex: 1;
+  padding: 0.4em;
+}
+
+/***  SECTION selectRover & manifest & roverImage  ***/
 
 .selectionAndManifestAndImage {
   display: flex;
@@ -19,7 +25,7 @@ body {
   justify-content: space-around;
 }
 
-/****  SELECT ROVER *****/
+/***  DIV  selectRover  ***/
 
 .selectRover {
   /* header styles */
@@ -39,31 +45,21 @@ body {
   display: flex;
   justify-content: center;
   padding: 0.5em;
-  font-size: 0.9em;
-  /*justify-content: space-evenly;*/
+  font-size: 0.8em;
 }
 
 
 
-/****  ROVER MANIFEST *****/
+/***  DIV manifest  ***/
 
-.roverManifest {
-  display:flex;
-  flex-direction: row;
-  padding: 1em 0.5em 1em 0.5em;
+.manifest: {
   color: #4b3f2e;
-  justify-content: space-around;
   align-items: center
-  /*font-size: ;*/
 }
 
 .roverName {
   padding-bottom: 0.4em;
   font-size: 1.4em ;
-}
-
-.roverManifest p {
-  padding-bottom: 0.2em;
 }
 
 .manifestLabel {
@@ -75,31 +71,45 @@ body {
   flex-direction: column;
 }
 
+
+/*** DIV roverImage  ***/
+
 .roverImage {
   max-width: 45%;
   height: auto;
   padding: 0.5em;
 }
 
+
+/***  SECTION roverPhotos  ***/
+
 .imageTitle {
   text-align: center;
   font-style: italic;
-  font-size: 0.9em;
+  font-size: 0.7em;
   padding-bottom: 0.1em;
 }
 
 
-main {
-  flex: 1;
-  padding: 0.4em;
-}
 
 footer {
   /* footer styles */
 }
 
+/* -------------- FOR NOT SUPER TINY PHONES --------- */
 
-/* -------------------  TABLET  --------------------- */
+@media (min-width: 300px) {
+  .rovers {
+    font-size: 0.9em;
+  }
+
+  .imageTitle {
+    font-size: 0.8em;
+  }
+}
+
+
+/* -------------  FOR LARGER PHONES ----------------- */
 @media (min-width: 450px) {
 
   .selectRover {
@@ -108,10 +118,6 @@ footer {
 
   .main {
     padding: 1.6em;
-  }
-
-  .roverManifest {
-    font-size: 1em;
   }
 
   .roverName {
@@ -157,7 +163,16 @@ footer {
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
-  /*.selectRover {
+
+
+  .selectionAndManifestAndImage {
+    justify-content: unset;
+    width: 90%;
+    max-width: 45em;
+    margin: auto;
+  }
+
+  .selectRover {
     width: 55%;
     align-self: flex-start;
   }
@@ -165,17 +180,26 @@ footer {
   .manifest {
     width: 55%;
     align-self: flex-start;
+    display: block;
+    padding: 2em;
   }
 
   .roverImage {
-
+    margin-top: -5.5em;
   }
-  *//* use mobile */
+
+
+  .marsImage {
+    width: 33%;
+  }
 }
 
 /* -------------------  DESKTOP  -------------------- */
 
 @media (min-width: 1224px) {
+  .marsImage {
+    width: 25%;
+  }
   /* use mobile */
 }
 
@@ -183,4 +207,7 @@ footer {
 
 @media (min-width: 1824px) {
   /* use mobile */
+  .marsImage {
+    width: 20%;
+  }
 }

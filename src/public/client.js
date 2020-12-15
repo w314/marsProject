@@ -2,7 +2,7 @@ let store = {
     // user: { name: "Student" },(
     // apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-    currentRover: 'Opportunity',
+    currentRover: 'Curiosity',
     Spirit: '',
     Curiosity: '',
     Opportunity: '',
