@@ -137,25 +137,23 @@ const createMainContent = (roverInfo) => {
     console.log(`images: ${images}`)
 
     return `
-            <div class="roverManifest">
-                <div class="roverInfo">
-                    <h2 class="roverName">${manifest.name}</h2>
-                    <p class="manifestDate">
-                        <span class="manifestLabel">Launch date:</span>
-                        <span class="manifestData">${manifest.launch_date}</span>
-                    </p>
-                    <p class=manifestDate>
-                        <span class="manifestLabel">Landing date:</span>
-                        <span class="manifestData">${manifest.landing_date}</span>
-                    </p>
-                    <p>
-                        <span class="manifestLabel">Status:</span>
-                        <span class="manifestData">${manifest.status}</span>
-                    </p>
-                </div>
-                <div class="roverImage">
-                    <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
-                </div>
+            <div class="manifest">
+                <h2 class="roverName">${manifest.name}</h2>
+                <p class="manifestDate">
+                    <span class="manifestLabel">Launch date:</span>
+                    <span class="manifestData">${manifest.launch_date}</span>
+                </p>
+                <p class=manifestDate>
+                    <span class="manifestLabel">Landing date:</span>
+                    <span class="manifestData">${manifest.landing_date}</span>
+                </p>
+                <p>
+                    <span class="manifestLabel">Status:</span>
+                    <span class="manifestData">${manifest.status}</span>
+                </p>
+            </div>
+            <div class="roverImage">
+                <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
             </div>
         </section>
         <section class="roverPhotos">

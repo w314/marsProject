@@ -11,6 +11,14 @@ body {
 }
 
 
+.selectionAndManifestAndImage {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+
 /****  SELECT ROVER *****/
 
 .selectRover {
@@ -18,6 +26,7 @@ body {
   background-color: #bea787;
   padding: 1em;
   color: #fff;
+  width: 100%;
 }
 
 .selectRoverTitle {
@@ -28,7 +37,7 @@ body {
 
 .rovers {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   padding: 0.5em;
   font-size: 0.9em;
   /*justify-content: space-evenly;*/
@@ -69,7 +78,7 @@ body {
 .roverImage {
   max-width: 45%;
   height: auto;
-  padding-left: 0.5em;
+  padding: 0.5em;
 }
 
 .imageTitle {
@@ -148,7 +157,20 @@ footer {
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
-  /* use mobile */
+  /*.selectRover {
+    width: 55%;
+    align-self: flex-start;
+  }
+
+  .manifest {
+    width: 55%;
+    align-self: flex-start;
+  }
+
+  .roverImage {
+
+  }
+  *//* use mobile */
 }
 
 /* -------------------  DESKTOP  -------------------- */
