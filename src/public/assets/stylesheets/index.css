@@ -1,11 +1,9 @@
-/* -------------------  MOBILE  --------------------- */
+/* -------------------  FOR MOBILES UNDER 300 PX  --------------------- */
 
 body {
   display: flex;
   flex-direction: column;
   font-family: Arial;
-  /*min-height: 100vh;*/
-  /*background-color: #e8cca5;*/
   background-color: #fdfaf6;
   font-variant: small-caps;
 }
@@ -28,7 +26,6 @@ main {
 /***  DIV  selectRover  ***/
 
 .selectRover {
-  /* header styles */
   background-color: #bea787;
   padding: 1em;
   color: #fff;
@@ -47,7 +44,6 @@ main {
   padding: 0.5em;
   font-size: 0.8em;
 }
-
 
 
 /***  DIV manifest  ***/
@@ -90,11 +86,6 @@ main {
   padding-bottom: 0.1em;
 }
 
-
-
-footer {
-  /* footer styles */
-}
 
 /* -------------- FOR NOT SUPER TINY PHONES --------- */
 
@@ -200,13 +191,11 @@ footer {
   .marsImage {
     width: 25%;
   }
-  /* use mobile */
 }
 
 /* -------------------  LARGE SCREENS  -------------- */
 
 @media (min-width: 1824px) {
-  /* use mobile */
   .marsImage {
     width: 20%;
   }
