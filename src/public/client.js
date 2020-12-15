@@ -36,12 +36,13 @@ const App = (state) => {
     // console.log(rovers)
 
     return `
-        <header>
-            <h2 class="selectRoverTitle">select rover</h2>
-            ${selectRover(state)}
-        </header>
         <main>
-            ${mainContent(state)}
+            <section class="selectionAndManifestAndImage">
+                <div class="selectRover">
+                    <h2 class="selectRoverTitle">select rover</h2>
+                    ${selectRover(state)}
+                </div>
+                ${mainContent(state)}
         </main>
         <footer></footer>
     `
@@ -76,7 +77,7 @@ const selectRover = (state) => {
             content += `</div>`
         }
         return content;
-    }, '<div class="selectRover">')
+    }, '<div class="rovers">')
 
     // return content
     return content
@@ -136,27 +137,27 @@ const createMainContent = (roverInfo) => {
     console.log(`images: ${images}`)
 
     return `
-        <section class="roverManifest">
-            <div class="roverInfo">
-                <h2 class="roverName">${manifest.name}</h2>
-                <p class="manifestDate">
-                    <span class="manifestLabel">Launch date:</span>
-                    <span class="manifestData">${manifest.launch_date}</span>
-                </p>
-                <p class=manifestDate>
-                    <span class="manifestLabel">Landing date:</span>
-                    <span class="manifestData">${manifest.landing_date}</span>
-                </p>
-                <p>
-                    <span class="manifestLabel">Status:</span>
-                    <span class="manifestData">${manifest.status}</span>
-                </p>
-            </div>
-            <div class="roverImage">
-                <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
+            <div class="roverManifest">
+                <div class="roverInfo">
+                    <h2 class="roverName">${manifest.name}</h2>
+                    <p class="manifestDate">
+                        <span class="manifestLabel">Launch date:</span>
+                        <span class="manifestData">${manifest.launch_date}</span>
+                    </p>
+                    <p class=manifestDate>
+                        <span class="manifestLabel">Landing date:</span>
+                        <span class="manifestData">${manifest.landing_date}</span>
+                    </p>
+                    <p>
+                        <span class="manifestLabel">Status:</span>
+                        <span class="manifestData">${manifest.status}</span>
+                    </p>
+                </div>
+                <div class="roverImage">
+                    <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
+                </div>
             </div>
         </section>
-        <section class="roverPhotos">
         <section class="roverPhotos">
             <p class=imageTitle>latest photos available taken on ${manifest.max_date}</p>
             <div class="marsImages">
