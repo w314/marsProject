@@ -1,27 +1,29 @@
-let store = {
-    // user: { name: "Student" },(
-    // apod: '',
-    rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-    currentRover: 'Curiosity',
+// set up immutable store
+const store = Immutable.Map({
+    // use immatable list for rover array
+    rovers: Immutable.List(['Curiosity', 'Opportunity', 'Spirit']),
+    currentRover: 'Opportunity',
     Spirit: '',
     Curiosity: '',
     Opportunity: '',
-}
+})
+// }
 
 // add our markup to the page
 const root = document.getElementById('root')
 
-const updateStore = (store, newState) => {
+const updateStore = (state, newState) => {
 
     // console.log(`Old state:\n ${store.photos}`)
     // console.log(`Old state:`)
     // console.log(store)
     console.log(`-----  UPDATING STORE ------- with new state`)
     console.log(newState);
-    store = Object.assign(store, newState)
+    // store = Object.assign(store, newState)
     // console.log(`Updated state:\n${store.photos}`)
     // console.log(`Updated state:`)
     // console.log(store)
+    const store = state.merge(newState);
     render(root, store)
 }
 
@@ -60,8 +62,14 @@ window.addEventListener('load', () => {
 const selectRover = (state) => {
 
     // get array of rovers and current rover from state
-    const { rovers, currentRover } = state
+    // if using regular object:
+    // const { rovers, currentRover } = state
 
+
+    const rovers = Array.from(state.get('rovers'));
+    console.log(rovers)
+    const currentRover = state.get('currentRover')
+    console.log(currentRover)
 
     // create rover selection content
     const content = rovers.reduce((content, rover, index, array) => {
@@ -94,7 +102,10 @@ const updateRover = (event, state) => {
 const mainContent = (state) => {
 
     // get current rover
-    const rover = state.currentRover;
+    const currentRover = state.get('currentRover');
+    const rover = state.get([currentRover]);
+    console.log(`rover object from state:`)
+    console.log(rover)
 
     // if a rover is active, it's photos are uploaded throughout the day
     // it's worth fetchings its data regularly
@@ -104,30 +115,38 @@ const mainContent = (state) => {
     const refreshTime = 1000 * 60 * 15;
     // create boolean to determine if manifest is outdated
     const manifestOutDated =
-        state[rover] &&
-        state[rover].manifest.status === 'active' &&
-        state[rover].manifest.time_stamp <= now.getTime() - refreshTime
+        rover &&
+        // state[rover].manifest.status === 'active' &&
+        rover.manifest.status === 'active' &&
+        // state[rover].manifest.time_stamp <= now.getTime() - refreshTime
+        rover.manifest.time_stamp <= now.getTime() - refreshTime
 
     // if information about rover is missing or if it's outdated request information again
-    if (!state[rover] || manifestOutDated) {
+    if (!rover || manifestOutDated) {
         // request rover information
-        getRoverInfo(rover)
+        // console.log(`requesting roverInfo for ${rover}`)
+        getRoverInfo(currentRover)
         .then(res => {
             // update store with information received
-            const newState = {[rover] : res}
+            console.log(`got rover info`)
+            const newState = {[currentRover] : res}
             updateStore(state, newState)
         })
     }
 
     // return content created
-    return createMainContent(state[rover])
+    return createMainContent(rover)
 }
 
 
 
 const createMainContent = (roverInfo) => {
 
+    console.log(`incoming roverInfo`);
+    console.log(roverInfo)
+
     const { manifest, photos } = roverInfo
+
 
     // generate image tags
     const images = photos.reduce((content, photo) =>
@@ -179,7 +198,7 @@ const getRoverInfo = (rover) => {
     // const roverInfo = state[rover];
     // console.log(`rover object in state: ${rover}`)
     // if (!roverInfo) {
-    const roverInfo = fetch(`http://localhost:3000/rover/${rover}`)
+    const roverInfo = fetch(`http://localhost:3001/rover/${rover}`)
         .then(res => res.json())
         .then(res => {
             const date = new Date();
@@ -198,7 +217,7 @@ const getRoverInfo = (rover) => {
             // console.log(roverInfo)
             const dateOfLatestPhotos = roverInfo.manifest.max_date;
             // console.log(`date of latest photos: ${dateOfLatestPhotos}`)
-            const roverData = fetch(`http://localhost:3000/roverPhotos/${rover}/${dateOfLatestPhotos}`)
+            const roverData = fetch(`http://localhost:3001/roverPhotos/${rover}/${dateOfLatestPhotos}`)
             .then(res => res.json())
             .then(res => {
                 roverInfo.photos = res.roverPhotos.photos
@@ -226,7 +245,7 @@ const getRoverInfo = (rover) => {
 const getImageOfTheDay = (state) => {
     let { apod } = state
 
-    fetch(`http://localhost:3000/apod`)
+    fetch(`http://localhost:3001/apod`)
         .then(res => res.json())
         .then(apod => updateStore(store, { apod }))
 
