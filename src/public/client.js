@@ -24,6 +24,18 @@ const updateStore = (state, newState) => {
     // console.log(`Updated state:`)
     // console.log(store)
     const store = state.merge(newState);
+    // console.log(`updated state`)
+    // console.log(store)
+    // const currentRover = store.get('currentRover')
+    // const rover = store.get(currentRover)
+    // console.log('opportunity:')
+    // console.log(rover);
+    // const manifest = rover.get('manifest')
+    // console.log('opportunity manifest')
+    // console.log(manifest)
+    // const launch = manifest.get('launch_date')
+    // console.log('launch date')
+    // console.log(launch);
     render(root, store)
 }
 
@@ -103,7 +115,7 @@ const mainContent = (state) => {
 
     // get current rover
     const currentRover = state.get('currentRover');
-    const rover = state.get([currentRover]);
+    const rover = state.get(currentRover);
     console.log(`rover object from state:`)
     console.log(rover)
 
@@ -114,12 +126,13 @@ const mainContent = (state) => {
     // set time period in milliseconds after which an active rover's information is refreshed
     const refreshTime = 1000 * 60 * 15;
     // create boolean to determine if manifest is outdated
-    const manifestOutDated =
-        rover &&
-        // state[rover].manifest.status === 'active' &&
-        rover.manifest.status === 'active' &&
-        // state[rover].manifest.time_stamp <= now.getTime() - refreshTime
-        rover.manifest.time_stamp <= now.getTime() - refreshTime
+    const manifestOutDated = false;
+    //     rover &&
+    //     // state[rover].manifest.status === 'active' &&
+    //     rover.manifest.status === 'active' &&
+    //     // state[rover].manifest.time_stamp <= now.getTime() - refreshTime
+    //     rover.manifest.time_stamp <= now.getTime() - refreshTime
+
 
     // if information about rover is missing or if it's outdated request information again
     if (!rover || manifestOutDated) {
@@ -145,7 +158,14 @@ const createMainContent = (roverInfo) => {
     console.log(`incoming roverInfo`);
     console.log(roverInfo)
 
-    const { manifest, photos } = roverInfo
+    // const { manifest, photos } = roverInfo
+
+    const manifest = roverInfo.get('manifest');
+    const photos = roverInfo.get('photos');
+
+    console.log(`manifest and photos`)
+    console.log(manifest)
+    console.log(photos)
 
 
     // generate image tags
@@ -157,26 +177,26 @@ const createMainContent = (roverInfo) => {
 
     return `
             <div class="manifest">
-                <h2 class="roverName">${manifest.name}</h2>
+                <h2 class="roverName">${manifest.get('name')}</h2>
                 <p class="manifestDate">
                     <span class="manifestLabel">Launch date:</span>
-                    <span class="manifestData">${manifest.launch_date}</span>
+                    <span class="manifestData">${manifest.get('launch_date')}</span>
                 </p>
                 <p class=manifestDate>
                     <span class="manifestLabel">Landing date:</span>
-                    <span class="manifestData">${manifest.landing_date}</span>
+                    <span class="manifestData">${manifest.get('landing_date')}</span>
                 </p>
                 <p>
                     <span class="manifestLabel">Status:</span>
-                    <span class="manifestData">${manifest.status}</span>
+                    <span class="manifestData">${manifest.get('status')}</span>
                 </p>
             </div>
             <div class="roverImage">
-                <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
+                <img src="./assets/images/${manifest.get('name')}.jpg" height="10px" width="100%"/>
             </div>
         </section>
         <section class="roverPhotos">
-            <p class=imageTitle>latest photos available taken on ${manifest.max_date}</p>
+            <p class=imageTitle>latest photos available taken on ${manifest.get('max_date')}</p>
             <div class="marsImages">
                 ${images}
             </div>
