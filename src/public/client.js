@@ -46,7 +46,7 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-    let { rovers, currentRover, roverData, curiosity, apod, photos } = state
+    // let { rovers, currentRover, roverData, curiosity, apod, photos } = state
     // console.log(rovers)
 
     return `
@@ -79,9 +79,9 @@ const selectRover = (state) => {
 
 
     const rovers = Array.from(state.get('rovers'));
-    console.log(rovers)
+    // console.log(rovers)
     const currentRover = state.get('currentRover')
-    console.log(currentRover)
+    // console.log(currentRover)
 
     // create rover selection content
     const content = rovers.reduce((content, rover, index, array) => {
@@ -106,7 +106,7 @@ const selectRover = (state) => {
 
 const updateRover = (event, state) => {
     currentRover = event.target.value;
-    console.log(currentRover);
+    // console.log(currentRover);
     updateStore(state, { currentRover });
 }
 
@@ -126,15 +126,12 @@ const mainContent = (state) => {
     // set time period in milliseconds after which an active rover's information is refreshed
     const refreshTime = 1000 * 60 * 15;
     // create boolean to determine if manifest is outdated
-
-    // >>> TODO
-    // fix manifestOutDated
-    const manifestOutDated = false;
-    //     rover &&
-    //     // state[rover].manifest.status === 'active' &&
-    //     rover.manifest.status === 'active' &&
-    //     // state[rover].manifest.time_stamp <= now.getTime() - refreshTime
-    //     rover.manifest.time_stamp <= now.getTime() - refreshTime
+    const manifestOutDated =
+        rover &&
+        // state[rover].manifest.status === 'active' &&
+        rover.get('manifest').get('status') === 'active' &&
+        // state[rover].manifest.time_stamp <= now.getTime() - refreshTime
+        rover.get('manifest').get('time_stamp') <= now.getTime() - refreshTime
 
 
     // if information about rover is missing or if it's outdated request information again
@@ -177,12 +174,10 @@ const createMainContent = (roverInfo) => {
 
     // generate image tags
     const images = photos.reduce((content, photo) =>
-        // {return content += `<img class="marsImage" src="${photo.img_src}" height="350px" width="100%"/>`}, '')
-        {   console.log('current photo in reduce function')
-            console.log(photo)
-            return content += `<img class="marsImage" src="${photo.get('img_src')}"/>`}, '')
+        // { return content += `<img class="marsImage" src="${photo.get('img_src')}"/>`}, '')
+        { return content += `<img class="marsImage" src="${photo}"/>`}, '')
 
-    console.log(`images: ${images}`)
+    // console.log(`images: ${images}`)
 
     return `
             <div class="manifest">
@@ -205,12 +200,28 @@ const createMainContent = (roverInfo) => {
             </div>
         </section>
         <section class="roverPhotos">
-            <p class=imageTitle>latest photos available taken on ${manifest.get('max_date')}</p>
+            ${datingPhotos(manifest.get('status'), manifest.get('max_date'))}
             <div class="marsImages">
                 ${images}
             </div>
         </section>
     `
+            // <p class=imageTitle>latest photos available taken on ${manifest.get('max_date')}</p>
+}
+
+
+// created this function to satisfy requirement for creating dynamic content using an if statment
+const datingPhotos = (status, max_date) => {
+    if (status === 'active') {
+        return `
+            <p class=imageTitle>latest photos available taken on ${max_date}</p>
+        `
+    } else {
+        return `
+            <p class=imageTitle>this mission is compeleted </p>
+            <p class=imageTitle>latest photos were taken on ${max_date}</p>
+        `
+    }
 }
 
 
@@ -249,7 +260,7 @@ const getRoverInfo = (rover) => {
             const roverData = fetch(`http://localhost:3001/roverPhotos/${rover}/${dateOfLatestPhotos}`)
             .then(res => res.json())
             .then(res => {
-                roverInfo.photos = res.roverPhotos.photos
+                roverInfo.photos = res.roverPhotos.photos.map((photo) => photo.img_src);
                 // console.log(roverInfo)
                 return roverInfo
             })
