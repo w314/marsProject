@@ -126,6 +126,9 @@ const mainContent = (state) => {
     // set time period in milliseconds after which an active rover's information is refreshed
     const refreshTime = 1000 * 60 * 15;
     // create boolean to determine if manifest is outdated
+
+    // >>> TODO
+    // fix manifestOutDated
     const manifestOutDated = false;
     //     rover &&
     //     // state[rover].manifest.status === 'active' &&
@@ -167,11 +170,17 @@ const createMainContent = (roverInfo) => {
     console.log(manifest)
     console.log(photos)
 
+    const photo = photos.get(0);
+    console.log('first photo')
+    console.log(photo)
+
 
     // generate image tags
     const images = photos.reduce((content, photo) =>
         // {return content += `<img class="marsImage" src="${photo.img_src}" height="350px" width="100%"/>`}, '')
-        {return content += `<img class="marsImage" src="${photo.img_src}"/>`}, '')
+        {   console.log('current photo in reduce function')
+            console.log(photo)
+            return content += `<img class="marsImage" src="${photo.get('img_src')}"/>`}, '')
 
     console.log(`images: ${images}`)
 
