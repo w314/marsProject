@@ -38,12 +38,15 @@ const App = (state) => {
     // let { rovers, currentRover, roverData, curiosity, apod, photos } = state
     // console.log(rovers)
 
+    const rovers = Array.from(state.get('rovers'))
+    const currentRover = state.get('currentRover')
+
     return `
         <main>
             <section class="selectionAndManifestAndImage">
                 <div class="selectRover">
                     <h2 class="selectRoverTitle">select rover</h2>
-                    ${selectRover(state)}
+                    ${selectRover(rovers, currentRover)}
                 </div>
                 ${mainContent(state)}
         </main>
@@ -54,7 +57,9 @@ const App = (state) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
 
-    document.body.addEventListener('click', (event) => {
+    document.body.addEventListener('click', (event, store) => {
+        // TODO send store to handleClick
+
         console.log(`body was clicked`)
         handleClick(event)});
 
@@ -65,27 +70,21 @@ window.addEventListener('load', () => {
 // ------------------------------------------------------  COMPONENTS
 
 
-const handleClick = (event) => {
+const handleClick = (event, store) => {
     console.log(`event in handleClick`)
     console.log(event.target.id)
 
+    // const rovers = Array.from(store.get('rovers'));
+
     if (event.target.id === 'Spirit' || event.target.id === 'Opportunity' || event.target.id === 'Curiosity') {
+    // if (rovers.indexOf(event.target.id) != -1) {
         const newRover = event.target.id;
         updateRover(newRover);
     }
 }
 
-const selectRover = (state) => {
+const selectRover = (rovers, currentRover) => {
 
-    // get array of rovers and current rover from state
-    // if using regular object:
-    // const { rovers, currentRover } = state
-
-
-    const rovers = Array.from(state.get('rovers'));
-    // console.log(rovers)
-    const currentRover = state.get('currentRover')
-    // console.log(currentRover)
 
     // create rover selection content
     const content = rovers.reduce((content, rover, index, array) => {
