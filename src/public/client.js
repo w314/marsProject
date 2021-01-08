@@ -1,5 +1,5 @@
 // set up immutable store
-const store = Immutable.Map({
+let store = Immutable.Map({
     // use immatable list for rover array
     rovers: Immutable.List(['Curiosity', 'Opportunity', 'Spirit']),
     currentRover: 'Opportunity',
@@ -12,30 +12,19 @@ const store = Immutable.Map({
 // add our markup to the page
 const root = document.getElementById('root')
 
-const updateStore = (state, newState) => {
+const updateStore = (property, value) => {
 
-    // console.log(`Old state:\n ${store.photos}`)
-    // console.log(`Old state:`)
-    // console.log(store)
-    console.log(`-----  UPDATING STORE ------- with new state`)
-    console.log(newState);
-    // store = Object.assign(store, newState)
-    // console.log(`Updated state:\n${store.photos}`)
-    // console.log(`Updated state:`)
-    // console.log(store)
-    const store = state.merge(newState);
-    // console.log(`updated state`)
-    // console.log(store)
-    // const currentRover = store.get('currentRover')
-    // const rover = store.get(currentRover)
-    // console.log('opportunity:')
-    // console.log(rover);
-    // const manifest = rover.get('manifest')
-    // console.log('opportunity manifest')
-    // console.log(manifest)
-    // const launch = manifest.get('launch_date')
-    // console.log('launch date')
-    // console.log(launch);
+    console.log(`Old store:`)
+    console.log(store)
+
+    console.log(`-----  UPDATING STORE ------- with:`)
+    console.log(property)
+    console.log(value)
+
+    store = store.set(property, value);
+    console.log(`updated store`)
+    console.log(store)
+
     render(root, store)
 }
 
@@ -64,12 +53,27 @@ const App = (state) => {
 
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
+
+    document.body.addEventListener('click', (event) => {
+        console.log(`body was clicked`)
+        handleClick(event)});
+
     render(root, store)
 })
 
 
 // ------------------------------------------------------  COMPONENTS
 
+
+const handleClick = (event) => {
+    console.log(`event in handleClick`)
+    console.log(event.target.id)
+
+    if (event.target.id === 'Spirit' || event.target.id === 'Opportunity' || event.target.id === 'Curiosity') {
+        const newRover = event.target.id;
+        updateRover(newRover);
+    }
+}
 
 const selectRover = (state) => {
 
@@ -86,7 +90,7 @@ const selectRover = (state) => {
     // create rover selection content
     const content = rovers.reduce((content, rover, index, array) => {
         // create radio button for each rover
-        content += `<input type="radio" id="roverButtons" name="rover" value="${rover}" onClick="updateRover(event, store)"`
+        content += `<input type="radio" id="${rover}" name="rover" value="${rover}"`
         // if it's the current rover make it "checked"
         if (rover === currentRover) {
             content += ' checked';
@@ -104,10 +108,10 @@ const selectRover = (state) => {
 }
 
 
-const updateRover = (event, state) => {
-    currentRover = event.target.value;
+const updateRover = (newRover) => {
+    // currentRover = event.target.value;
     // console.log(currentRover);
-    updateStore(state, { currentRover });
+    updateStore('currentRover', newRover);
 }
 
 
@@ -129,9 +133,11 @@ const mainContent = (state) => {
     const manifestOutDated =
         rover &&
         // state[rover].manifest.status === 'active' &&
-        rover.get('manifest').get('status') === 'active' &&
+        rover.manifest.status === 'active' &&
+        // rover.get('manifest').get('status') === 'active' &&
         // state[rover].manifest.time_stamp <= now.getTime() - refreshTime
-        rover.get('manifest').get('time_stamp') <= now.getTime() - refreshTime
+        // rover.get('manifest').get('time_stamp') <= now.getTime() - refreshTime
+        rover.manifest.time_stamp <= now.getTime() - refreshTime
 
 
     // if information about rover is missing or if it's outdated request information again
@@ -143,7 +149,7 @@ const mainContent = (state) => {
             // update store with information received
             console.log(`got rover info`)
             const newState = {[currentRover] : res}
-            updateStore(state, newState)
+            updateStore(currentRover, res)
         })
     }
 
@@ -158,18 +164,18 @@ const createMainContent = (roverInfo) => {
     console.log(`incoming roverInfo`);
     console.log(roverInfo)
 
-    // const { manifest, photos } = roverInfo
+    const { manifest, photos } = roverInfo
 
-    const manifest = roverInfo.get('manifest');
-    const photos = roverInfo.get('photos');
+    // const manifest = roverInfo.get('manifest');
+    // const photos = roverInfo.get('photos');
 
     console.log(`manifest and photos`)
     console.log(manifest)
     console.log(photos)
 
-    const photo = photos.get(0);
-    console.log('first photo')
-    console.log(photo)
+    // const photo = photos.get(0);
+    // console.log('first photo')
+    // console.log(photo)
 
 
     // generate image tags
@@ -181,31 +187,58 @@ const createMainContent = (roverInfo) => {
 
     return `
             <div class="manifest">
-                <h2 class="roverName">${manifest.get('name')}</h2>
+                <h2 class="roverName">${manifest.name}</h2>
                 <p class="manifestDate">
                     <span class="manifestLabel">Launch date:</span>
-                    <span class="manifestData">${manifest.get('launch_date')}</span>
+                    <span class="manifestData">${manifest.launch_date}</span>
                 </p>
                 <p class=manifestDate>
                     <span class="manifestLabel">Landing date:</span>
-                    <span class="manifestData">${manifest.get('landing_date')}</span>
+                    <span class="manifestData">${manifest.landing_date}</span>
                 </p>
                 <p>
                     <span class="manifestLabel">Status:</span>
-                    <span class="manifestData">${manifest.get('status')}</span>
+                    <span class="manifestData">${manifest.status}</span>
                 </p>
             </div>
             <div class="roverImage">
-                <img src="./assets/images/${manifest.get('name')}.jpg" height="10px" width="100%"/>
+                <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
             </div>
         </section>
         <section class="roverPhotos">
-            ${datingPhotos(manifest.get('status'), manifest.get('max_date'))}
+            ${datingPhotos(manifest.status, manifest.max_date)}
             <div class="marsImages">
                 ${images}
             </div>
         </section>
     `
+    // return `
+    //         <div class="manifest">
+    //             <h2 class="roverName">${manifest.get('name')}</h2>
+    //             <p class="manifestDate">
+    //                 <span class="manifestLabel">Launch date:</span>
+    //                 <span class="manifestData">${manifest.get('launch_date')}</span>
+    //             </p>
+    //             <p class=manifestDate>
+    //                 <span class="manifestLabel">Landing date:</span>
+    //                 <span class="manifestData">${manifest.get('landing_date')}</span>
+    //             </p>
+    //             <p>
+    //                 <span class="manifestLabel">Status:</span>
+    //                 <span class="manifestData">${manifest.get('status')}</span>
+    //             </p>
+    //         </div>
+    //         <div class="roverImage">
+    //             <img src="./assets/images/${manifest.get('name')}.jpg" height="10px" width="100%"/>
+    //         </div>
+    //     </section>
+    //     <section class="roverPhotos">
+    //         ${datingPhotos(manifest.get('status'), manifest.get('max_date'))}
+    //         <div class="marsImages">
+    //             ${images}
+    //         </div>
+    //     </section>
+    // `
             // <p class=imageTitle>latest photos available taken on ${manifest.get('max_date')}</p>
 }
 
