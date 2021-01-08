@@ -40,6 +40,7 @@ const App = (state) => {
 
     const rovers = Array.from(state.get('rovers'))
     const currentRover = state.get('currentRover')
+    const roverInfo = state.get(currentRover);
 
     return `
         <main>
@@ -48,7 +49,7 @@ const App = (state) => {
                     <h2 class="selectRoverTitle">select rover</h2>
                     ${selectRover(rovers, currentRover)}
                 </div>
-                ${mainContent(state)}
+                ${mainContent(currentRover, roverInfo)}
         </main>
         <footer></footer>
     `
@@ -83,8 +84,8 @@ const handleClick = (event, store) => {
     }
 }
 
-const selectRover = (rovers, currentRover) => {
 
+const selectRover = (rovers, currentRover) => {
 
     // create rover selection content
     const content = rovers.reduce((content, rover, index, array) => {
@@ -114,13 +115,7 @@ const updateRover = (newRover) => {
 }
 
 
-const mainContent = (state) => {
-
-    // get current rover
-    const currentRover = state.get('currentRover');
-    const rover = state.get(currentRover);
-    console.log(`rover object from state:`)
-    console.log(rover)
+const mainContent = (currentRover, roverInfo) => {
 
     // if a rover is active, it's photos are uploaded throughout the day
     // it's worth fetchings its data regularly
@@ -130,30 +125,23 @@ const mainContent = (state) => {
     const refreshTime = 1000 * 60 * 15;
     // create boolean to determine if manifest is outdated
     const manifestOutDated =
-        rover &&
-        // state[rover].manifest.status === 'active' &&
-        rover.manifest.status === 'active' &&
-        // rover.get('manifest').get('status') === 'active' &&
-        // state[rover].manifest.time_stamp <= now.getTime() - refreshTime
-        // rover.get('manifest').get('time_stamp') <= now.getTime() - refreshTime
-        rover.manifest.time_stamp <= now.getTime() - refreshTime
+        roverInfo &&
+        roverInfo.manifest.status === 'active' &&
+        roverInfo.manifest.time_stamp <= now.getTime() - refreshTime
 
 
     // if information about rover is missing or if it's outdated request information again
-    if (!rover || manifestOutDated) {
-        // request rover information
-        // console.log(`requesting roverInfo for ${rover}`)
+    if (!roverInfo || manifestOutDated) {
         getRoverInfo(currentRover)
         .then(res => {
             // update store with information received
-            console.log(`got rover info`)
-            const newState = {[currentRover] : res}
+            // console.log(`got rover info`)
             updateStore(currentRover, res)
         })
     }
 
     // return content created
-    return createMainContent(rover)
+    return createMainContent(roverInfo)
 }
 
 
