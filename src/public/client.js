@@ -138,15 +138,16 @@ const mainContent = (currentRover, roverInfo) => {
     // if information about rover is missing or if it's outdated request information again
     if (!roverInfo || manifestOutDated) {
         getRoverInfo(currentRover)
-        .then(res => {
-            // update store with information received
-            // console.log(`got rover info`)
-            updateStore(currentRover, res)
-        })
+        // .then(res => {
+        //     // update store with information received
+        //     // console.log(`got rover info`)
+        //     updateStore(currentRover, res)
+        // })
         return ''
-    } else {
-        return createMainContent(roverInfo)
     }
+    // } else {
+        return createMainContent(roverInfo)
+    // }
 
 }
 
@@ -285,11 +286,11 @@ const getRoverInfo = (rover) => {
             // console.log(roverInfo)
             // const newState = {[rover]: roverInfo}
             // console.log(newState)
-            return roverInfo
-            // updateStore(state, newState)
+            // return roverInfo
+            updateStore(rover, roverInfo)
         })
 
-    return Promise.resolve(roverInfo)
+    // return Promise.resolve(roverInfo)
 }
 
 
