@@ -123,25 +123,25 @@ const mainContent = (currentRover, roverInfo) => {
     // if a rover is active, it's photos are uploaded throughout the day
     // it's worth fetchings its data regularly
     // create variable to store current time
-    const now = new Date()
+    const now = new Date();
     // set time period in milliseconds after which an active rover's information needs to be refreshed
     const refreshTime = 1000 * 60 * 15;
     // create boolean to determine if manifest is outdated
     const manifestOutDated =
         roverInfo &&
         roverInfo.manifest.status === 'active' &&
-        roverInfo.manifest.time_stamp <= now.getTime() - refreshTime
+        roverInfo.manifest.time_stamp <= now.getTime() - refreshTime;
 
 
     // if information about rover is missing or if it's outdated request information again
     if (!roverInfo || manifestOutDated) {
-        getRoverInfo(currentRover)
+        getRoverInfo(currentRover);
         // return message to indicate information is loading
-        return 'Loading...'
+        return 'Loading...';
     }
 
     // if rover information is present return createMaincontent function
-    return createMainContent(roverInfo)
+    return createMainContent(roverInfo);
 }
 
 
@@ -192,7 +192,7 @@ const createMainContent = (roverInfo) => {
                 ${images}
             </div>
         </section>
-    `
+    `;
     // return `
     //         <div class="manifest">
     //             <h2 class="roverName">${manifest.get('name')}</h2>
@@ -226,15 +226,16 @@ const createMainContent = (roverInfo) => {
 
 // created this function to satisfy requirement for creating dynamic content using an if statment
 const datingPhotos = (status, max_date) => {
+    // use different title for photos based on status of rover
     if (status === 'active') {
         return `
             <p class=imageTitle>latest photos available taken on ${max_date}</p>
-        `
+        `;
     } else {
         return `
             <p class=imageTitle>this mission is compeleted </p>
             <p class=imageTitle>latest photos were taken on ${max_date}</p>
-        `
+        `;
     }
 }
 
@@ -247,9 +248,11 @@ const datingPhotos = (status, max_date) => {
 
 
 const getRoverInfo = (rover) => {
+    // fetch information about rover
     const roverInfo = fetch(`http://localhost:3001/rover/${rover}`)
         .then(res => res.json())
         .then(res => {
+            // from fetched information preapre rover's manifest
             const date = new Date();
             const manifest = {
                 name: res.roverData.photo_manifest.name,
@@ -259,18 +262,25 @@ const getRoverInfo = (rover) => {
                 max_date: res.roverData.photo_manifest.max_date,
                 time_stamp: date.getTime()
             }
+            // create object with manifest property and return it
             return { manifest: manifest}
         })
+        // fetch latest photos of rover
         .then(roverInfo => {
             // console.log(`roverinfo before photos`)
             // console.log(roverInfo)
+            // from received roverInfo get date of latest photos from manifest
             const dateOfLatestPhotos = roverInfo.manifest.max_date;
+            // use date obtained to fetch latest photos
             fetch(`http://localhost:3001/roverPhotos/${rover}/${dateOfLatestPhotos}`)
                 .then(res => res.json())
                 .then(res => {
+                    // collect imgage sources into array and
+                    // add it to roverInfo object under photos property
                     roverInfo.photos = res.roverPhotos.photos.map((photo) => photo.img_src);
                     // console.log(`roverinfo after adding photos`)
                     // console.log(roverInfo)
+                    // update store with rover's information
                     updateStore(rover, roverInfo)
                 })
         })
