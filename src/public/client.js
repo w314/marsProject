@@ -75,8 +75,6 @@ const updateStore = (property, value) => {
 
 
 const handleClick = (event, store) => {
-    // console.log(`event in handleClick`)
-    // console.log(event.target.id)
 
     // const rovers = Array.from(store.get('rovers'));
     // console.log(rovers)
@@ -129,8 +127,8 @@ const mainContent = (currentRover, roverInfo) => {
     // create boolean to determine if manifest is outdated
     const manifestOutDated =
         roverInfo &&
-        roverInfo.manifest.status === 'active' &&
-        roverInfo.manifest.time_stamp <= now.getTime() - refreshTime;
+        roverInfo.get('manifest').get('status') === 'active' &&
+        roverInfo.get('manifest').get('time_stamp') <= now.getTime() - refreshTime;
 
 
     // if information about rover is missing or if it's outdated request information again
@@ -148,79 +146,43 @@ const mainContent = (currentRover, roverInfo) => {
 
 const createMainContent = (roverInfo) => {
 
-    // console.log(`incoming roverInfo`);
-    // console.log(roverInfo)
+    // get manifest and photos from roverInfo
+    const manifest = roverInfo.get('manifest');
+    const photos = Array.from(roverInfo.get('photos'));
 
-    const { manifest, photos } = roverInfo
-
-    // const manifest = roverInfo.get('manifest');
-    // const photos = roverInfo.get('photos');
-
-    // console.log(`manifest and photos`)
-    // console.log(manifest)
-    // console.log(photos)
 
     // generate image tags
     const images = photos.reduce((content, photo) =>
-        // { return content += `<img class="marsImage" src="${photo.get('img_src')}"/>`}, '')
         { return content += `<img class="marsImage" src="${photo}"/>`}, '')
 
-
+    //return content
     return `
             <div class="manifest">
-                <h2 class="roverName">${manifest.name}</h2>
+                <h2 class="roverName">${manifest.get('name')}</h2>
                 <p class="manifestDate">
                     <span class="manifestLabel">Launch date:</span>
-                    <span class="manifestData">${manifest.launch_date}</span>
+                    <span class="manifestData">${manifest.get('launch_date')}</span>
                 </p>
                 <p class=manifestDate>
                     <span class="manifestLabel">Landing date:</span>
-                    <span class="manifestData">${manifest.landing_date}</span>
+                    <span class="manifestData">${manifest.get('landing_date')}</span>
                 </p>
                 <p>
                     <span class="manifestLabel">Status:</span>
-                    <span class="manifestData">${manifest.status}</span>
+                    <span class="manifestData">${manifest.get('status')}</span>
                 </p>
             </div>
             <div class="roverImage">
-                <img src="./assets/images/${manifest.name}.jpg" height="10px" width="100%"/>
+                <img src="./assets/images/${manifest.get('name')}.jpg" height="10px" width="100%"/>
             </div>
         </section>
         <section class="roverPhotos">
-            ${datingPhotos(manifest.status, manifest.max_date)}
+            ${datingPhotos(manifest.get('status'), manifest.get('max_date'))}
             <div class="marsImages">
                 ${images}
             </div>
         </section>
     `;
-    // return `
-    //         <div class="manifest">
-    //             <h2 class="roverName">${manifest.get('name')}</h2>
-    //             <p class="manifestDate">
-    //                 <span class="manifestLabel">Launch date:</span>
-    //                 <span class="manifestData">${manifest.get('launch_date')}</span>
-    //             </p>
-    //             <p class=manifestDate>
-    //                 <span class="manifestLabel">Landing date:</span>
-    //                 <span class="manifestData">${manifest.get('landing_date')}</span>
-    //             </p>
-    //             <p>
-    //                 <span class="manifestLabel">Status:</span>
-    //                 <span class="manifestData">${manifest.get('status')}</span>
-    //             </p>
-    //         </div>
-    //         <div class="roverImage">
-    //             <img src="./assets/images/${manifest.get('name')}.jpg" height="10px" width="100%"/>
-    //         </div>
-    //     </section>
-    //     <section class="roverPhotos">
-    //         ${datingPhotos(manifest.get('status'), manifest.get('max_date'))}
-    //         <div class="marsImages">
-    //             ${images}
-    //         </div>
-    //     </section>
-    // `
-            // <p class=imageTitle>latest photos available taken on ${manifest.get('max_date')}</p>
 }
 
 
@@ -254,34 +216,31 @@ const getRoverInfo = (rover) => {
         .then(res => {
             // from fetched information preapre rover's manifest
             const date = new Date();
-            const manifest = {
+            const manifest = Immutable.Map({
                 name: res.roverData.photo_manifest.name,
                 launch_date: res.roverData.photo_manifest.launch_date,
                 landing_date: res.roverData.photo_manifest.landing_date,
                 status: res.roverData.photo_manifest.status,
                 max_date: res.roverData.photo_manifest.max_date,
                 time_stamp: date.getTime()
-            }
+            });
             // create object with manifest property and return it
             return { manifest: manifest}
         })
         // fetch latest photos of rover
         .then(roverInfo => {
-            // console.log(`roverinfo before photos`)
-            // console.log(roverInfo)
             // from received roverInfo get date of latest photos from manifest
-            const dateOfLatestPhotos = roverInfo.manifest.max_date;
+            // const dateOfLatestPhotos = roverInfo.manifest.max_date;
+            const dateOfLatestPhotos = roverInfo.manifest.get('max_date');
             // use date obtained to fetch latest photos
             fetch(`http://localhost:3001/roverPhotos/${rover}/${dateOfLatestPhotos}`)
                 .then(res => res.json())
                 .then(res => {
                     // collect imgage sources into array and
                     // add it to roverInfo object under photos property
-                    roverInfo.photos = res.roverPhotos.photos.map((photo) => photo.img_src);
-                    // console.log(`roverinfo after adding photos`)
-                    // console.log(roverInfo)
-                    // update store with rover's information
-                    updateStore(rover, roverInfo)
+                    roverInfo.photos =  Immutable.List(res.roverPhotos.photos.map((photo) => photo.img_src));
+                    // update store with collected roverInfo
+                    updateStore(rover, Immutable.Map(roverInfo));
                 })
         })
 }
