@@ -269,20 +269,17 @@ const getRoverInfo = (rover) => {
             return { manifest: manifest}
         })
         .then(roverInfo => {
+            // console.log(`roverinfo before photos`)
             // console.log(roverInfo)
             const dateOfLatestPhotos = roverInfo.manifest.max_date;
-            // console.log(`date of latest photos: ${dateOfLatestPhotos}`)
-            const roverData = fetch(`http://localhost:3001/roverPhotos/${rover}/${dateOfLatestPhotos}`)
+            fetch(`http://localhost:3001/roverPhotos/${rover}/${dateOfLatestPhotos}`)
                 .then(res => res.json())
                 .then(res => {
                     roverInfo.photos = res.roverPhotos.photos.map((photo) => photo.img_src);
+                    // console.log(`roverinfo after adding photos`)
                     // console.log(roverInfo)
-                    return roverInfo
+                    updateStore(rover, roverInfo)
                 })
-            return roverData
-        })
-        .then(roverInfo => {
-            updateStore(rover, roverInfo)
         })
 }
 
