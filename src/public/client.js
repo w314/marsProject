@@ -7,26 +7,25 @@ let store = Immutable.Map({
     Curiosity: '',
     Opportunity: '',
 })
-// }
+
 
 // add our markup to the page
 const root = document.getElementById('root')
 
-const updateStore = (property, value) => {
+// listening for load event because page should load before any JS is called
+window.addEventListener('load', () => {
 
-    console.log(`Old store:`)
-    console.log(store)
+    // add click event listener to body
+    document.body.addEventListener('click', (event, store) => {
+        // TODO send store to handleClick
 
-    console.log(`-----  UPDATING STORE ------- with:`)
-    console.log(property)
-    console.log(value)
-
-    store = store.set(property, value);
-    console.log(`updated store`)
-    console.log(store)
+        // console.log(`body was clicked`)
+        handleClick(event, store)}
+    );
 
     render(root, store)
-}
+})
+
 
 const render = async (root, state) => {
     root.innerHTML = App(state)
@@ -35,8 +34,6 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-    // let { rovers, currentRover, roverData, curiosity, apod, photos } = state
-    // console.log(rovers)
 
     const rovers = Array.from(state.get('rovers'))
     const currentRover = state.get('currentRover')
@@ -55,33 +52,47 @@ const App = (state) => {
     `
 }
 
-// listening for load event because page should load before any JS is called
-window.addEventListener('load', () => {
 
-    document.body.addEventListener('click', (event, store) => {
-        // TODO send store to handleClick
+const updateStore = (property, value) => {
 
-        console.log(`body was clicked`)
-        handleClick(event)});
+    // console.log(`Old store:`)
+    // console.log(store)
+
+    console.log(`-----  UPDATING STORE ------- with:`)
+    console.log(property)
+    console.log(value)
+
+    store = store.set(property, value);
+    // console.log(`updated store`)
+    // console.log(store)
 
     render(root, store)
-})
+}
+
 
 
 // ------------------------------------------------------  COMPONENTS
 
 
 const handleClick = (event, store) => {
-    console.log(`event in handleClick`)
-    console.log(event.target.id)
+    // console.log(`event in handleClick`)
+    // console.log(event.target.id)
 
     // const rovers = Array.from(store.get('rovers'));
+    // console.log(rovers)
 
     if (event.target.id === 'Spirit' || event.target.id === 'Opportunity' || event.target.id === 'Curiosity') {
     // if (rovers.indexOf(event.target.id) != -1) {
         const newRover = event.target.id;
         updateRover(newRover);
     }
+}
+
+
+const updateRover = (newRover) => {
+    // currentRover = event.target.value;
+    // console.log(currentRover);
+    updateStore('currentRover', newRover);
 }
 
 
@@ -107,12 +118,6 @@ const selectRover = (rovers, currentRover) => {
     return content
 }
 
-
-const updateRover = (newRover) => {
-    // currentRover = event.target.value;
-    // console.log(currentRover);
-    updateStore('currentRover', newRover);
-}
 
 
 const mainContent = (currentRover, roverInfo) => {
@@ -148,29 +153,23 @@ const mainContent = (currentRover, roverInfo) => {
 
 const createMainContent = (roverInfo) => {
 
-    console.log(`incoming roverInfo`);
-    console.log(roverInfo)
+    // console.log(`incoming roverInfo`);
+    // console.log(roverInfo)
 
     const { manifest, photos } = roverInfo
 
     // const manifest = roverInfo.get('manifest');
     // const photos = roverInfo.get('photos');
 
-    console.log(`manifest and photos`)
-    console.log(manifest)
-    console.log(photos)
-
-    // const photo = photos.get(0);
-    // console.log('first photo')
-    // console.log(photo)
-
+    // console.log(`manifest and photos`)
+    // console.log(manifest)
+    // console.log(photos)
 
     // generate image tags
     const images = photos.reduce((content, photo) =>
         // { return content += `<img class="marsImage" src="${photo.get('img_src')}"/>`}, '')
         { return content += `<img class="marsImage" src="${photo}"/>`}, '')
 
-    // console.log(`images: ${images}`)
 
     return `
             <div class="manifest">
@@ -253,11 +252,6 @@ const datingPhotos = (status, max_date) => {
 
 
 const getRoverInfo = (rover) => {
-    // const rover =  state.currentRover;
-
-    // const roverInfo = state[rover];
-    // console.log(`rover object in state: ${rover}`)
-    // if (!roverInfo) {
     const roverInfo = fetch(`http://localhost:3001/rover/${rover}`)
         .then(res => res.json())
         .then(res => {
@@ -272,7 +266,6 @@ const getRoverInfo = (rover) => {
             }
             return { manifest: manifest}
         })
-        // .then(res => res.json())
         .then(roverInfo => {
             // console.log(roverInfo)
             const dateOfLatestPhotos = roverInfo.manifest.max_date;
@@ -296,7 +289,6 @@ const getRoverInfo = (rover) => {
         })
 
     return Promise.resolve(roverInfo)
-    // .then(res => mainContent())
 }
 
 
