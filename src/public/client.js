@@ -84,14 +84,12 @@ const handleClick = (event, store) => {
     if (event.target.id === 'Spirit' || event.target.id === 'Opportunity' || event.target.id === 'Curiosity') {
     // if (rovers.indexOf(event.target.id) != -1) {
         const newRover = event.target.id;
-        updateRover(newRover);
+        updateCurrentRover(newRover);
     }
 }
 
 
-const updateRover = (newRover) => {
-    // currentRover = event.target.value;
-    // console.log(currentRover);
+const updateCurrentRover = (newRover) => {
     updateStore('currentRover', newRover);
 }
 
@@ -126,7 +124,7 @@ const mainContent = (currentRover, roverInfo) => {
     // it's worth fetchings its data regularly
     // create variable to store current time
     const now = new Date()
-    // set time period in milliseconds after which an active rover's information is refreshed
+    // set time period in milliseconds after which an active rover's information needs to be refreshed
     const refreshTime = 1000 * 60 * 15;
     // create boolean to determine if manifest is outdated
     const manifestOutDated =
@@ -138,17 +136,12 @@ const mainContent = (currentRover, roverInfo) => {
     // if information about rover is missing or if it's outdated request information again
     if (!roverInfo || manifestOutDated) {
         getRoverInfo(currentRover)
-        // .then(res => {
-        //     // update store with information received
-        //     // console.log(`got rover info`)
-        //     updateStore(currentRover, res)
-        // })
-        return ''
+        // return message to indicate information is loading
+        return 'Loading...'
     }
-    // } else {
-        return createMainContent(roverInfo)
-    // }
 
+    // if rover information is present return createMaincontent function
+    return createMainContent(roverInfo)
 }
 
 
