@@ -143,10 +143,11 @@ const mainContent = (currentRover, roverInfo) => {
             // console.log(`got rover info`)
             updateStore(currentRover, res)
         })
+        return ''
+    } else {
+        return createMainContent(roverInfo)
     }
 
-    // return content created
-    return createMainContent(roverInfo)
 }
 
 
