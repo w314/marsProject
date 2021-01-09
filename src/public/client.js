@@ -95,23 +95,46 @@ const updateCurrentRover = (newRover) => {
 const selectRover = (rovers, currentRover) => {
 
     // create rover selection content
-    const content = rovers.reduce((content, rover, index, array) => {
-        // create radio button for each rover
-        content += `<input type="radio" id="${rover}" name="rover" value="${rover}"`
-        // if it's the current rover make it "checked"
-        if (rover === currentRover) {
-            content += ' checked';
-        }
-        content += `>${rover}`;
-        // if it's the last rover in the array ad the closing </div> tag
-        if (index === array.length-1) {
-            content += `</div>`
-        }
-        return content;
-    }, '<div class="rovers">')
+    // const content = rovers.reduce((content, rover, index, array) => {
+    //     // create radio button for each rover
+    //     content += `<input type="radio" id="${rover}" name="rover" value="${rover}"`
+    //     // if it's the current rover make it "checked"
+    //     if (rover === currentRover) {
+    //         content += ' checked';
+    //     }
+    //     content += `>${rover}`;
+    //     // if it's the last rover in the array ad the closing </div> tag
+    //     if (index === array.length-1) {
+    //         content += `</div>`
+    //     }
+    //     return content;
+    // }, '<div class="rovers">')
+
+    // create rover selection content
+    const content = `
+        <div class="rovers">
+            ${radioButtons(rovers, currentRover)}
+        </div>
+    `
 
     // return content
     return content
+}
+
+const radioButtons = (values, valueSelected) => {
+
+    const radioButtons = values.reduce((content, value, index, array) => {
+        // create radio button for each rover
+        content += `<input type="radio" id="${value}" name="rover" value="${value}"`
+        // if it's the current rover make it "checked"
+        if (value === valueSelected) {
+            content += ' checked';
+        }
+        content += `>${value}`;
+        return content;
+    }, '')
+
+    return radioButtons;
 }
 
 
@@ -135,7 +158,7 @@ const mainContent = (currentRover, roverInfo) => {
     if (!roverInfo || manifestOutDated) {
         getRoverInfo(currentRover);
         // return message to indicate information is loading
-        return 'Loading...';
+        return '<p>Loading...</p>';
     }
 
     // if rover information is present return createMaincontent function
@@ -150,10 +173,6 @@ const createMainContent = (roverInfo) => {
     const manifest = roverInfo.get('manifest');
     const photos = Array.from(roverInfo.get('photos'));
 
-
-    // generate image tags
-    const images = photos.reduce((content, photo) =>
-        { return content += `<img class="marsImage" src="${photo}"/>`}, '')
 
     //return content
     return `
@@ -179,10 +198,24 @@ const createMainContent = (roverInfo) => {
         <section class="roverPhotos">
             ${datingPhotos(manifest.get('status'), manifest.get('max_date'))}
             <div class="marsImages">
-                ${images}
+                ${marsPhotos(photos, imageTags)}
             </div>
         </section>
     `;
+}
+
+
+// generates list of image tags to display mars photos
+const marsPhotos = (photos, callback) => {
+    const className = 'marsImage';
+    return callback(photos, className);
+}
+
+const imageTags = (sourceList, className) => {
+    // generate image tags
+    const images = sourceList.reduce((content, source) =>
+        { return content += `<img class="${className}" src="${source}"/>`}, '')
+    return images;
 }
 
 
