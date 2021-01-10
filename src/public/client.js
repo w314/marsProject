@@ -1,4 +1,4 @@
-// set up immutable store
+// immutable state
 let store = Immutable.Map({
     // use immatable list for rover array
     rovers: Immutable.List(['Curiosity', 'Opportunity', 'Spirit']),
@@ -6,39 +6,47 @@ let store = Immutable.Map({
     Spirit: '',
     Curiosity: '',
     Opportunity: '',
-})
+});
 
 
-// add our markup to the page
-const root = document.getElementById('root')
+// root identifiest the Element object we'll add our content to
+const root = document.getElementById('root');
 
-// listening for load event because page should load before any JS is called
+// setup a page loaded event listener
 window.addEventListener('load', () => {
 
     // add click event listener to body
-    document.body.addEventListener('click', (event, store) => {
-        // TODO send store to handleClick
+    document.body.addEventListener('click', handleClick);
 
-        // console.log(`body was clicked`)
-        handleClick(event, store)}
-    );
-
-    render(root, store)
-})
+    // after page loaded render content
+    render(root, store);
+});
 
 
+/**
+* @description Renders page
+* @param {object} root - Element object to add innerHTML to
+* @param {object} state - Immutable Map of state to pass to App function
+*/
 const render = async (root, state) => {
-    root.innerHTML = App(state)
-}
+    root.innerHTML = App(state);
+};
 
 
-// create content
+/**
+* @description Returns page content
+* @param {object} state - Immutable Map of state
+* @returns {string} InnerHTML of root Element
+*/
 const App = (state) => {
 
-    const rovers = Array.from(state.get('rovers'))
-    const currentRover = state.get('currentRover')
+    // get list of rovers, current rover and
+    // and information about current rover from state
+    const rovers = Array.from(state.get('rovers'));
+    const currentRover = state.get('currentRover');
     const roverInfo = state.get(currentRover);
 
+    // return page content
     return `
         <main>
             <section class="selectionAndManifestAndImage">
@@ -49,66 +57,59 @@ const App = (state) => {
                 ${mainContent(currentRover, roverInfo)}
         </main>
         <footer></footer>
-    `
-}
+    `;
+};
 
 
+/**
+* @description Updates state
+* @param {string} property - Name of property to update
+* @param {object} value - Value of property updated
+*/
 const updateStore = (property, value) => {
 
-    // console.log(`Old store:`)
-    // console.log(store)
+    // console.log(`-----  UPDATING STORE ------- with:`)
+    // console.log(property)
+    // console.log(value)
 
-    console.log(`-----  UPDATING STORE ------- with:`)
-    console.log(property)
-    console.log(value)
-
+    // update store
     store = store.set(property, value);
-    // console.log(`updated store`)
-    // console.log(store)
 
-    render(root, store)
-}
-
+    // render page
+    render(root, store);
+};
 
 
-// ------------------------------------------------------  COMPONENTS
+/**
+* @description Handles click events
+* @param {object} event - Event object
+*/
+const handleClick = (event) => {
 
-
-const handleClick = (event, store) => {
-
-    // const rovers = Array.from(store.get('rovers'));
-    // console.log(rovers)
-
+    // only react to click events if rover selection radio buttons were clicked
     if (event.target.id === 'Spirit' || event.target.id === 'Opportunity' || event.target.id === 'Curiosity') {
-    // if (rovers.indexOf(event.target.id) != -1) {
         const newRover = event.target.id;
         updateCurrentRover(newRover);
     }
 }
 
 
+/**
+* @description Updates current rover
+* @param {string} newRover - Name of new currentRover
+*/
 const updateCurrentRover = (newRover) => {
     updateStore('currentRover', newRover);
 }
 
 
+/**
+* @description Creates section of page where rovers can be selected
+* @param {object} rovers - List of possible rovers
+* @param {string} currentRover - Name of current rover shown
+* @returns {string} Content of rover selection
+*/
 const selectRover = (rovers, currentRover) => {
-
-    // create rover selection content
-    // const content = rovers.reduce((content, rover, index, array) => {
-    //     // create radio button for each rover
-    //     content += `<input type="radio" id="${rover}" name="rover" value="${rover}"`
-    //     // if it's the current rover make it "checked"
-    //     if (rover === currentRover) {
-    //         content += ' checked';
-    //     }
-    //     content += `>${rover}`;
-    //     // if it's the last rover in the array ad the closing </div> tag
-    //     if (index === array.length-1) {
-    //         content += `</div>`
-    //     }
-    //     return content;
-    // }, '<div class="rovers">')
 
     // create rover selection content
     const content = `
@@ -119,11 +120,18 @@ const selectRover = (rovers, currentRover) => {
 
     // return content
     return content
-}
+};
 
+
+/**
+* @description Creates radioButtons
+* @param {object} values - List of radio button values
+* @param {string} valueSelected - Value to be shown as the checked radio button
+* @returns {string} Content for radiobuttons created
+*/
 const radioButtons = (values, valueSelected) => {
 
-    const radioButtons = values.reduce((content, value, index, array) => {
+    const radioButtons = values.reduce((content, value) => {
         // create radio button for each rover
         content += `<input type="radio" id="${value}" name="rover" value="${value}"`
         // if it's the current rover make it "checked"
@@ -132,13 +140,18 @@ const radioButtons = (values, valueSelected) => {
         }
         content += `>${value}`;
         return content;
-    }, '')
+    }, '');
 
     return radioButtons;
-}
+};
 
 
-
+/**
+* @description Creates main content
+* @param {string} currentRover - Name of rover displayed
+* @param {object} roverInfo - Immutable Map of rover information
+* @returns {string} Content to display
+*/
 const mainContent = (currentRover, roverInfo) => {
 
     // if a rover is active, it's photos are uploaded throughout the day
@@ -163,10 +176,14 @@ const mainContent = (currentRover, roverInfo) => {
 
     // if rover information is present return createMaincontent function
     return createMainContent(roverInfo);
-}
+};
 
 
-
+/**
+* @description Creates main content
+* @param {object} roverInfo - Immutable Map of rover information
+* @returns {string} Main content
+*/
 const createMainContent = (roverInfo) => {
 
     // get manifest and photos from roverInfo
@@ -202,24 +219,41 @@ const createMainContent = (roverInfo) => {
             </div>
         </section>
     `;
-}
+};
 
 
-// generates list of image tags to display mars photos
+/**
+* @description Creates content with mars images
+* @param {object} photos - List of photos rover captured on Mars
+* @param {object} callback - Function to call to prepare image tags for content
+* @returns {object} Function call
+*/
 const marsPhotos = (photos, callback) => {
     const className = 'marsImage';
     return callback(photos, className);
-}
+};
 
+
+/**
+* @description Creates HTML image tags from
+* @param {object} sourceList - List of image sources
+* @param {string} className - Name of class to add to image tags
+* @returns {string} Image tags
+*/
 const imageTags = (sourceList, className) => {
     // generate image tags
     const images = sourceList.reduce((content, source) =>
-        { return content += `<img class="${className}" src="${source}"/>`}, '')
+        { return content += `<img class="${className}" src="${source}"/>`}, '');
     return images;
-}
+};
 
 
-// created this function to satisfy requirement for creating dynamic content using an if statment
+/**
+* @description Create photo title
+* @param {string} status - Status of current rover
+* @param {string} max_date - Date of latest available photos
+* @returns {string} Title of mars photos
+*/
 const datingPhotos = (status, max_date) => {
     // use different title for photos based on status of rover
     if (status === 'active') {
@@ -235,13 +269,13 @@ const datingPhotos = (status, max_date) => {
 }
 
 
-
-
 // ------------------------------------------------------  API CALLS
 
 
-
-
+/**
+* @description Get rover information
+* @param {string} rover - Name of rover to
+*/
 const getRoverInfo = (rover) => {
     // fetch information about rover
     const roverInfo = fetch(`http://localhost:3001/rover/${rover}`)
@@ -276,57 +310,4 @@ const getRoverInfo = (rover) => {
                     updateStore(rover, Immutable.Map(roverInfo));
                 })
         })
-}
-
-
-// UDACITY EXAMPLES
-// Example API call
-const getImageOfTheDay = (state) => {
-    let { apod } = state
-
-    fetch(`http://localhost:3001/apod`)
-        .then(res => res.json())
-        .then(apod => updateStore(store, { apod }))
-
-    // return data
-}
-
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-    if (name) {
-        return `
-            <h1>Welcome, ${name}!</h1>
-        `
-    }
-
-    return `
-        <h1>Hello!</h1>
-    `
-}
-// Example of a pure function that renders infomation requested from the backend
-const ImageOfTheDay = (apod) => {
-
-    // If image does not already exist, or it is not from today -- request it again
-    const today = new Date()
-    const photodate = new Date(apod.date)
-    // console.log(photodate.getDate(), today.getDate());
-
-    // console.log(photodate.getDate() === today.getDate());
-    if (!apod || apod.date === today.getDate() ) {
-        getImageOfTheDay(store)
-    }
-
-    // check if the photo of the day is actually type video!
-    if (apod.media_type === "video") {
-        return (`
-            <p>See today's featured video <a href="${apod.url}">here</a></p>
-            <p>${apod.title}</p>
-            <p>${apod.explanation}</p>
-        `)
-    } else {
-        return (`
-            <img src="${apod.image.url}" height="350px" width="100%" />
-            <p>${apod.image.explanation}</p>
-        `)
-    }
-}
+};
