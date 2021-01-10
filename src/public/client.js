@@ -189,24 +189,30 @@ const createMainContent = (roverInfo) => {
     // get manifest and photos from roverInfo
     const manifest = roverInfo.get('manifest');
     const photos = Array.from(roverInfo.get('photos'));
-
+    // information to display in mission details section
+    const missionDetails = [
+        {
+            label: 'Launch date',
+            value: manifest.get('launch_date'),
+            class: 'manifestDate'
+        },
+        {
+            label: 'Landing date',
+            value: manifest.get('landing_date'),
+            class: 'manifestData'
+        },
+        {
+            label: 'Status',
+            value: manifest.get('status'),
+            class: ''
+        }
+    ];
 
     //return content
     return `
             <div class="manifest">
                 <h2 class="roverName">${manifest.get('name')}</h2>
-                <p class="manifestDate">
-                    <span class="manifestLabel">Launch date:</span>
-                    <span class="manifestData">${manifest.get('launch_date')}</span>
-                </p>
-                <p class=manifestDate>
-                    <span class="manifestLabel">Landing date:</span>
-                    <span class="manifestData">${manifest.get('landing_date')}</span>
-                </p>
-                <p>
-                    <span class="manifestLabel">Status:</span>
-                    <span class="manifestData">${manifest.get('status')}</span>
-                </p>
+                ${aboutMission(missionDetails)}
             </div>
             <div class="roverImage">
                 <img src="./assets/images/${manifest.get('name')}.jpg" height="10px" width="100%"/>
@@ -220,6 +226,23 @@ const createMainContent = (roverInfo) => {
         </section>
     `;
 };
+
+/**
+* @description Creates content for mission details
+* @param {object} missionDetails - List of detials to display
+* @returns {string} Mission details content
+*/
+const aboutMission = (missionDetails) => {
+    const content = missionDetails.reduce((content, detail) => {
+        return content += `
+           <p class="${detail.class}">
+                <span class="manifestLabel">${detail.label}:</span>
+                <span class="manifestData">${detail.value}</span>
+            </p>
+        `;
+    }, '');
+    return content;
+}
 
 
 /**
@@ -278,7 +301,7 @@ const datingPhotos = (status, max_date) => {
 */
 const getRoverInfo = (rover) => {
     // fetch information about rover
-    const roverInfo = fetch(`http://localhost:3001/rover/${rover}`)
+    const roverInfo = fetch(`http://localhost:3000/rover/${rover}`)
         .then(res => res.json())
         .then(res => {
             // from fetched information preapre rover's manifest
@@ -300,7 +323,7 @@ const getRoverInfo = (rover) => {
             // const dateOfLatestPhotos = roverInfo.manifest.max_date;
             const dateOfLatestPhotos = roverInfo.manifest.get('max_date');
             // use date obtained to fetch latest photos
-            fetch(`http://localhost:3001/roverPhotos/${rover}/${dateOfLatestPhotos}`)
+            fetch(`http://localhost:3000/roverPhotos/${rover}/${dateOfLatestPhotos}`)
                 .then(res => res.json())
                 .then(res => {
                     // collect imgage sources into array and
