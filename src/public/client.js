@@ -310,4 +310,7 @@ const getRoverInfo = (rover) => {
                     updateStore(rover, Immutable.Map(roverInfo));
                 })
         })
+        .catch(error  => {
+            console.log(error)
+        });
 };
