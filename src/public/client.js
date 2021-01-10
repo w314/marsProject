@@ -301,7 +301,8 @@ const datingPhotos = (status, max_date) => {
 */
 const getRoverInfo = (rover) => {
     // fetch information about rover
-    const roverInfo = fetch(`http://localhost:3000/rover/${rover}`)
+    const fetchManifest = `http://localhost:3000/rover/${rover}`
+    const roverInfo = fetch(fetchManifest)
         .then(res => res.json())
         .then(res => {
             // from fetched information preapre rover's manifest
@@ -323,7 +324,8 @@ const getRoverInfo = (rover) => {
             // const dateOfLatestPhotos = roverInfo.manifest.max_date;
             const dateOfLatestPhotos = roverInfo.manifest.get('max_date');
             // use date obtained to fetch latest photos
-            fetch(`http://localhost:3000/roverPhotos/${rover}/${dateOfLatestPhotos}`)
+            const fetchPothos = `http://localhost:3000/roverPhotos/${rover}/${dateOfLatestPhotos}`
+            fetch(fetchPothos)
                 .then(res => res.json())
                 .then(res => {
                     // collect imgage sources into array and
@@ -332,8 +334,11 @@ const getRoverInfo = (rover) => {
                     // update store with collected roverInfo
                     updateStore(rover, Immutable.Map(roverInfo));
                 })
+                .catch(error => {
+                    console.log(`Error while fetching from ${fetchPothos}: ${error}`)
+                });
         })
         .catch(error  => {
-            console.log(error)
+            console.log(`Error while fetching from ${fetchManifest}: ${error}`)
         });
 };
